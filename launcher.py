@@ -81,18 +81,32 @@ class App(tk.Tk):
                  bg=BG, fg=TEXT_DARK, font=("Helvetica", 11, "bold"),
                  anchor="w").pack(fill="x", pady=(18, 6))
 
+        row2 = tk.Frame(body, bg=BG)
+        row2.pack()
+
         self._btn = tk.Button(
-            body,
+            row2,
             text="▶  INICIAR ANÁLISIS",
             command=self._start,
             bg=BTN_GREEN, fg="white",
             font=("Helvetica", 13, "bold"),
             relief="flat", cursor="hand2",
-            padx=20, pady=12, width=30,
+            padx=20, pady=10, width=22,
         )
-        self._btn.pack()
+        self._btn.pack(side="left", padx=(0, 10))
         self._btn.bind("<Enter>", lambda e: self._btn.config(bg=BTN_GREEN_HOVER))
         self._btn.bind("<Leave>", lambda e: self._btn.config(bg=BTN_GREEN))
+
+        self._idx_btn = tk.Button(
+            row2,
+            text="⟳  Actualizar plantillas",
+            command=self._index_templates,
+            bg=ACCENT_LIGHT, fg=ACCENT,
+            font=("Helvetica", 10),
+            relief="flat", cursor="hand2",
+            padx=10, pady=10,
+        )
+        self._idx_btn.pack(side="left")
 
         self._status = tk.Label(body, text="Esperando carpeta…",
                                 bg=BG, fg=TEXT_MUTED,
@@ -139,9 +153,48 @@ class App(tk.Tk):
         self._running = running
         if running:
             self._btn.config(state="disabled", text="⏳  Procesando…", bg="#888888")
+            self._idx_btn.config(state="disabled")
             self._status.config(text="Procesando documentos… esto puede tardar varios minutos.", fg=ACCENT)
         else:
             self._btn.config(state="normal", text="▶  INICIAR ANÁLISIS", bg=BTN_GREEN)
+            self._idx_btn.config(state="normal")
+
+    def _index_templates(self):
+        if self._running:
+            return
+        self._log.config(state="normal")
+        self._log.delete("1.0", "end")
+        self._log.config(state="disabled")
+        self._set_running(True)
+        self._status.config(text="Indexando plantillas…", fg=ACCENT)
+        threading.Thread(target=self._run_index, daemon=True).start()
+
+    def _run_index(self):
+        self._log_write("⟳ Indexando plantillas de templates/declaraciones/…", "info")
+        cmd = [PYTHON, str(PROJECT_DIR / "main.py"), "--indexar-plantillas"]
+        try:
+            proc = subprocess.Popen(
+                cmd, cwd=str(PROJECT_DIR),
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, bufsize=1,
+            )
+            for line in proc.stdout:
+                line = line.rstrip()
+                if line:
+                    tag = "ok" if "✔" in line else "err" if "ERROR" in line else ""
+                    self._log_write(line, tag)
+            proc.wait()
+            if proc.returncode == 0:
+                self._log_write("✔ Índice actualizado.", "ok")
+                self.after(0, lambda: self._status.config(
+                    text="✔ Plantillas indexadas correctamente", fg=BTN_GREEN))
+            else:
+                self._log_write("⚠ Indexado finalizado con errores.", "err")
+                self.after(0, lambda: self._status.config(text="⚠ Error al indexar", fg=RED))
+        except Exception as e:
+            self._log_write(f"ERROR: {e}", "err")
+        finally:
+            self.after(0, lambda: self._set_running(False))
 
     def _start(self):
         folder = self._folder.get().strip()

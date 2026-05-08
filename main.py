@@ -25,18 +25,13 @@ def _safe_exp(analysis: dict) -> str:
     return re.sub(r'[^\w\-]', '_', exp)[:60]
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Procesador automático de documentos de licitación — Hologic Iberia"
-    )
-    parser.add_argument("--carpeta", required=True, help="Ruta a la carpeta con los documentos PDF/DOCX")
-    args = parser.parse_args()
+def cmd_indexar(force: bool) -> None:
+    """Index templates — one-time operation, no licitacion needed."""
+    from declaration_filler import index_templates
+    index_templates(force=force)
 
-    carpeta = args.carpeta
-    if not Path(carpeta).is_dir():
-        print(f"ERROR: La carpeta no existe: {carpeta}")
-        sys.exit(1)
 
+def cmd_procesar(carpeta: str) -> None:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_path = str(OUTPUT_DIR / f"log_{timestamp}.txt")
     _setup_logging(log_path)
@@ -84,7 +79,6 @@ def main() -> None:
         errors.append(msg)
 
     # ── PASO 2: Resumen + PDF ───────────────────────────────────────────────
-    summary_pdf: str = ""
     try:
         from summarizer import generate_summary
         _, summary_pdf = generate_summary(analysis, files_info, output_dir)
@@ -109,17 +103,8 @@ def main() -> None:
     # ── PASO 4: Resaltado PDF ───────────────────────────────────────────────
     try:
         from pdf_highlighter import highlight_pdfs
-        pdf_paths = [
-            info["path"] for info in files_info
-            if info["path"].endswith(".pdf") and not info.get("native_pdf_b64")
-        ]
-        # Also include image-heavy PDFs for highlighting
-        pdf_paths += [
-            info["path"] for info in files_info
-            if info["path"].endswith(".pdf") and info.get("native_pdf_b64")
-        ]
-        pdf_paths = list(dict.fromkeys(pdf_paths))  # deduplicate preserving order
-
+        pdf_paths = [info["path"] for info in files_info if info["path"].endswith(".pdf")]
+        pdf_paths = list(dict.fromkeys(pdf_paths))
         frases = analysis.get("frases_clave", [])
         highlighted = highlight_pdfs(pdf_paths, frases, output_dir)
         attachments.extend(highlighted)
@@ -131,7 +116,7 @@ def main() -> None:
 
     # ── PASO 5a: Declaraciones del propio pliego ────────────────────────────
     try:
-        from declaration_filler import fill_declarations, fill_from_templates
+        from declaration_filler import fill_declarations
         declaraciones = analysis.get("declaraciones_a_rellenar", [])
         file_map = {info["name"]: info["path"] for info in files_info}
         if declaraciones:
@@ -145,7 +130,7 @@ def main() -> None:
         logger.error(msg)
         errors.append(msg)
 
-    # ── PASO 5b: Plantillas genéricas del usuario ───────────────────────────
+    # ── PASO 5b: Plantillas genéricas (index-based) ─────────────────────────
     try:
         from declaration_filler import fill_from_templates
         tpl_files = fill_from_templates(analysis, output_dir)
@@ -178,6 +163,46 @@ def main() -> None:
         logger.info("Proceso completado SIN errores.")
     logger.info(f"Log guardado en: {log_path}")
     logger.info("=" * 60)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Procesador automático de documentos de licitación — Hologic Iberia"
+    )
+    sub = parser.add_subparsers(dest="cmd")
+
+    # Default command: process a folder
+    proc = sub.add_parser("procesar", help="Procesa una licitación")
+    proc.add_argument("--carpeta", required=True,
+                      help="Carpeta con los documentos PDF/DOCX")
+
+    # One-time indexing command
+    idx = sub.add_parser("indexar-plantillas",
+                         help="Indexa las plantillas DOCX (ejecutar al añadir plantillas nuevas)")
+    idx.add_argument("--forzar", action="store_true",
+                     help="Reindexar todas aunque ya estén en el índice")
+
+    # Legacy: support bare --carpeta without subcommand
+    parser.add_argument("--carpeta", help=argparse.SUPPRESS)
+    parser.add_argument("--indexar-plantillas", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--forzar", action="store_true", help=argparse.SUPPRESS)
+
+    args = parser.parse_args()
+
+    # Route to the right command
+    if args.cmd == "indexar-plantillas" or getattr(args, "indexar_plantillas", False):
+        cmd_indexar(force=getattr(args, "forzar", False))
+    elif args.cmd == "procesar" or getattr(args, "carpeta", None):
+        carpeta = args.carpeta
+        if not carpeta:
+            parser.print_help()
+            sys.exit(1)
+        if not Path(carpeta).is_dir():
+            print(f"ERROR: La carpeta no existe: {carpeta}")
+            sys.exit(1)
+        cmd_procesar(carpeta)
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":

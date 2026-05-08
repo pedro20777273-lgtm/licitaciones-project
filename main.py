@@ -115,12 +115,12 @@ def cmd_procesar(carpeta: str) -> None:
         errors.append(msg)
 
     # ── PASO 5a: Declaraciones del propio pliego ────────────────────────────
+    declaraciones_del_pliego = analysis.get("declaraciones_a_rellenar", [])
     try:
         from declaration_filler import fill_declarations
-        declaraciones = analysis.get("declaraciones_a_rellenar", [])
         file_map = {info["name"]: info["path"] for info in files_info}
-        if declaraciones:
-            docx_files = fill_declarations(declaraciones, file_map, analysis, output_dir)
+        if declaraciones_del_pliego:
+            docx_files = fill_declarations(declaraciones_del_pliego, file_map, analysis, output_dir)
             attachments.extend(docx_files)
             logger.info(f"PASO 5a: OK → {len(docx_files)} declaraciones del pliego")
         else:
@@ -130,10 +130,13 @@ def cmd_procesar(carpeta: str) -> None:
         logger.error(msg)
         errors.append(msg)
 
-    # ── PASO 5b: Plantillas genéricas (index-based) ─────────────────────────
+    # ── PASO 5b: Plantillas genéricas — solo si el pliego no las cubre ──────
     try:
         from declaration_filler import fill_from_templates
-        tpl_files = fill_from_templates(analysis, output_dir)
+        tpl_files = fill_from_templates(
+            analysis, output_dir,
+            declaraciones_del_pliego=declaraciones_del_pliego,
+        )
         attachments.extend(tpl_files)
         if tpl_files:
             logger.info(f"PASO 5b: OK → {len(tpl_files)} plantillas genéricas rellenadas")

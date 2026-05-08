@@ -251,12 +251,17 @@ def fill_declarations(
 
 # ── PASO 5b: generic user templates (index-based, token-efficient) ────────────
 
-def _select_applicable(index_entries: list[dict], analysis: dict) -> list[dict]:
+def _select_applicable(
+    index_entries: list[dict],
+    analysis: dict,
+    declaraciones_del_pliego: list[dict],
+) -> list[dict]:
     """
     Lightweight call: send only the index (not template content) to Claude
     and get back which filenames apply to this contract.
+    Templates are only selected when the pliego has no explicit annex
+    covering the same declaration type.
     """
-    # Build a compact summary for each entry (no file content)
     compact = [
         {
             "filename": e["filename"],
@@ -269,11 +274,27 @@ def _select_applicable(index_entries: list[dict], analysis: dict) -> list[dict]:
         for e in index_entries
     ]
 
+    # Compact list of what the pliego already provides
+    ya_cubiertos = [
+        {"nombre": d.get("nombre", ""), "descripcion": d.get("descripcion", "")}
+        for d in declaraciones_del_pliego
+    ]
+
+    ya_cubiertos_txt = (
+        f"DECLARACIONES YA INCLUIDAS EN EL PROPIO PLIEGO (NO usar plantilla genérica para estas):\n"
+        f"{json.dumps(ya_cubiertos, ensure_ascii=False, indent=2)}\n\n"
+        if ya_cubiertos else
+        "El pliego no incluye ningún anexo/declaración propio.\n\n"
+    )
+
     prompt = (
         f"DATOS DEL CONTRATO:\n{_contract_context(analysis)}\n\n"
-        f"PLANTILLAS DISPONIBLES (solo metadatos, sin contenido):\n"
+        f"{ya_cubiertos_txt}"
+        f"PLANTILLAS GENÉRICAS DISPONIBLES (de concursos anteriores):\n"
         f"{json.dumps(compact, ensure_ascii=False, indent=2)}\n\n"
-        f"Indica qué plantillas aplican a este contrato. "
+        f"Selecciona SOLO las plantillas que:\n"
+        f"  1. Aplican al tipo de contrato y procedimiento de este concurso, Y\n"
+        f"  2. NO están ya cubiertas por un anexo explícito del propio pliego.\n"
         f'Devuelve ÚNICAMENTE este JSON:\n'
         f'{{"aplican": ["filename1.docx", "filename2.docx"]}}'
     )
@@ -336,11 +357,16 @@ def _fill_single_template(entry: dict, analysis: dict, output_dir: str) -> str |
     return out_path
 
 
-def fill_from_templates(analysis: dict, output_dir: str) -> list[str]:
+def fill_from_templates(
+    analysis: dict,
+    output_dir: str,
+    declaraciones_del_pliego: list[dict] | None = None,
+) -> list[str]:
     """
     Token-efficient flow:
       1. Read the lightweight index (no file content) — ~150 tokens
-      2. Ask Claude which templates apply — tiny call
+      2. Ask Claude which templates apply AND are not already covered
+         by an explicit annex in the pliego — tiny call
       3. Send content only for the selected templates — typically 2-3 files
     """
     if not INDEX_PATH.exists():
@@ -362,8 +388,14 @@ def fill_from_templates(analysis: dict, output_dir: str) -> list[str]:
         logger.info("PASO 5b: Índice vacío")
         return []
 
+    pliego_decls = declaraciones_del_pliego or []
+    if pliego_decls:
+        logger.info(
+            f"PASO 5b: El pliego ya cubre {len(pliego_decls)} declaración(es) — "
+            f"las plantillas genéricas solo cubrirán el resto"
+        )
     logger.info(f"PASO 5b: Seleccionando entre {len(entries)} plantillas indexadas…")
-    selected = _select_applicable(entries, analysis)
+    selected = _select_applicable(entries, analysis, pliego_decls)
 
     if not selected:
         logger.info("PASO 5b: Ninguna plantilla genérica aplica a este contrato")

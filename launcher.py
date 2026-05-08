@@ -11,7 +11,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, scrolledtext
 
 PROJECT_DIR = Path(__file__).parent
-PYTHON = "/usr/bin/python3.12"
+PYTHON = sys.executable  # works on both Windows and Linux
 
 # ── Colores corporativos Hologic ──────────────────────────────────────────────
 BG = "#FFFFFF"

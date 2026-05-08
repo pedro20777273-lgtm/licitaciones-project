@@ -17,7 +17,7 @@ Devuelve ÚNICAMENTE un objeto JSON con la siguiente estructura. Sin texto adici
   ]
 }
 
-Genera EXACTAMENTE estas 11 hojas en este orden:
+Genera las siguientes hojas en este orden. El número total de hojas varía según los sobres que tenga la licitación:
 
 1. "RESUMEN EJECUTIVO" — Los 10-15 puntos más importantes de la licitación. Marca como críticos (es_critico: true) los que requieren acción inmediata.
 
@@ -29,17 +29,19 @@ Genera EXACTAMENTE estas 11 hojas en este orden:
 
 5. "CRITERIOS ADJUDICACIÓN" — Todos los criterios con sus pesos y descripción de valoración. Incluye fórmulas si las hay.
 
-6. "DOCUMENTACIÓN" — Lista completa de documentos a presentar, organizados por sobre. Marca como críticos los documentos que requieren preparación especial.
+6 a N. "SOBRE X — [NOMBRE]" (UNA HOJA POR SOBRE) — Examina el campo "documentacion_requerida" del análisis JSON. Por cada sobre identificado genera una hoja separada. Ejemplos de nombre: "SOBRE 1 - ADMINISTRATIVO", "SOBRE 2 - TÉCNICO", "SOBRE 3 - ECONÓMICO". Si el pliego usa nomenclatura distinta (Parte A/B, Anexo I/II, etc.) úsala. Lista TODOS los documentos de ese sobre con checkbox y descripción de cómo obtenerlos/prepararlos. Marca como críticos los que requieren preparación especial o son difíciles de obtener. Si solo hay 1 sobre, genera 1 hoja; si hay 2, genera 2; si hay 3, genera 3.
 
-7. "GARANTÍAS" — Información sobre garantías provisional, definitiva y complementaria.
+Continúa con las hojas fijas:
 
-8. "ALERTAS CRÍTICAS" — Todas las restricciones excluyentes y alertas. Todas las filas de esta hoja deben tener es_critico: true.
+N+1. "GARANTÍAS" — Información sobre garantías provisional, definitiva y complementaria.
 
-9. "ERRORES DETECTADOS" — Contradicciones y errores encontrados en los documentos. Marca como críticos los que pueden causar exclusión si no se resuelven.
+N+2. "ALERTAS CRÍTICAS" — Todas las restricciones excluyentes y alertas. Todas las filas de esta hoja deben tener es_critico: true.
 
-10. "DECLARACIONES" — Lista de todos los formularios y declaraciones a completar con su origen y campos.
+N+3. "ERRORES DETECTADOS" — Contradicciones y errores encontrados en los documentos. Marca como críticos los que pueden causar exclusión si no se resuelven.
 
-11. "ANÁLISIS ESTRATÉGICO" — Fortalezas, debilidades, riesgos y recomendación final de presentación.
+N+4. "DECLARACIONES" — Lista de todos los formularios y declaraciones a completar con su origen y campos.
+
+N+5. "ANÁLISIS ESTRATÉGICO" — Fortalezas, debilidades, riesgos y recomendación final de presentación.
 
 REGLAS:
 - Cada fila tiene exactamente "campo", "detalle" y "es_critico" (boolean)

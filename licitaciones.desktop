@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Licitaciones Hologic
+Comment=Procesador automático de concursos públicos
+Exec=/usr/bin/python3.12 /home/user/licitaciones-project/launcher.py
+Icon=/home/user/licitaciones-project/icon.png
+Terminal=false
+Categories=Office;
+StartupNotify=true

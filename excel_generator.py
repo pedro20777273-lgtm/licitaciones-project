@@ -1,24 +1,26 @@
 import json
 import logging
 import re
+import shutil
 from pathlib import Path
 
 import anthropic
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.table import Table, TableStyleInfo
 
 from config import ANTHROPIC_API_KEY, MODEL_FAST, PROMPTS_DIR, TEMPLATES_DIR
 
 logger = logging.getLogger(__name__)
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-HEADER_FILL = PatternFill(start_color="1F3864", end_color="1F3864", fill_type="solid")
-HEADER_FONT = Font(name="Arial", size=10, bold=True, color="FFFFFF")
-CELL_FONT = Font(name="Arial", size=10)
-CRITICAL_FONT = Font(name="Arial", size=10, color="FF0000")
+# Styles matching the user's template
+HEADER_FONT = Font(name="Calibri", size=11, bold=True)
+CELL_FONT = Font(name="Calibri", size=11)
 WRAP = Alignment(wrap_text=True, vertical="top")
+THIN = Side(style="thin", color="BFBFBF")
+BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
+CRITICAL_FONT = Font(name="Calibri", size=11, bold=True, color="C00000")
 
 
 def _load_prompt() -> str:
@@ -53,98 +55,175 @@ def _call_claude(analysis: dict) -> dict:
     return _extract_json(raw)
 
 
-def _unique_table_name(wb: openpyxl.Workbook, base: str) -> str:
-    existing = set()
-    for ws in wb.worksheets:
-        for tbl in ws.tables.values():
-            existing.add(tbl.displayName)
-    name = base[:20]
-    if name not in existing:
-        return name
-    i = 2
-    while f"{name}_{i}" in existing:
-        i += 1
-    return f"{name}_{i}"
+# ── Sheet writers ─────────────────────────────────────────────────────────────
 
-
-def _write_sheet(wb: openpyxl.Workbook, sheet_data: dict) -> None:
-    name = sheet_data["nombre"][:31]
-    # Avoid duplicate sheet names
-    base_name = name
-    suffix = 2
-    while name in [ws.title for ws in wb.worksheets]:
-        name = f"{base_name[:28]}_{suffix}"
-        suffix += 1
-    ws = wb.create_sheet(title=name)
-    filas = sheet_data.get("filas", [])
-
-    ws.append(["Campo", "Detalle"])
-    header_row = ws[1]
-    for cell in header_row:
+def _style_header_row(ws, col_count: int) -> None:
+    for col in range(1, col_count + 1):
+        cell = ws.cell(row=1, column=col)
         cell.font = HEADER_FONT
-        cell.fill = HEADER_FILL
         cell.alignment = WRAP
+        cell.border = BORDER
 
-    for row_data in filas:
-        campo = str(row_data.get("campo", ""))
-        detalle = str(row_data.get("detalle", ""))
-        es_critico = bool(row_data.get("es_critico", False))
-        ws.append([campo, detalle])
+
+def _fill_kv_sheet(ws, data: dict) -> None:
+    """Fill a 2-column key/value sheet (rows already exist from template)."""
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        key_cell = row[0]
+        if key_cell.value and str(key_cell.value) in data:
+            val_cell = row[1]
+            val_cell.value = data[str(key_cell.value)] or ""
+            val_cell.font = CELL_FONT
+            val_cell.alignment = WRAP
+            val_cell.border = BORDER
+
+
+def _append_rows_3col(ws, rows: list[dict], col_keys: list[str]) -> None:
+    """Append dynamic rows to a 3-column sheet."""
+    for row_data in rows:
+        vals = [row_data.get(k, "") or "" for k in col_keys]
+        ws.append(vals)
         row_idx = ws.max_row
-        font = CRITICAL_FONT if es_critico else CELL_FONT
-        for col in (1, 2):
-            cell = ws.cell(row=row_idx, column=col)
-            cell.font = font
+        for col_i in range(1, 4):
+            cell = ws.cell(row=row_idx, column=col_i)
+            cell.font = CELL_FONT
             cell.alignment = WRAP
-
-    # Table style
-    if ws.max_row > 1:
-        table_ref = f"A1:{get_column_letter(2)}{ws.max_row}"
-        tbl_name = _unique_table_name(wb, f"Tabla_{name.replace(' ', '_')}")
-        table = Table(displayName=tbl_name, ref=table_ref)
-        table.tableStyleInfo = TableStyleInfo(
-            name="TableStyleMedium2",
-            showFirstColumn=False,
-            showLastColumn=False,
-            showRowStripes=True,
-            showColumnStripes=False,
-        )
-        ws.add_table(table)
-
-    ws.column_dimensions["A"].width = 35
-    ws.column_dimensions["B"].width = 100
-    ws.row_dimensions[1].height = 20
+            cell.border = BORDER
 
 
-def _load_base_workbook() -> openpyxl.Workbook | None:
-    """Returns the user's Excel template if it exists, else None."""
-    tpl = TEMPLATES_DIR / "excel" / "plantilla.xlsx"
-    if tpl.exists():
-        logger.info(f"PASO 3: Usando plantilla Excel base: {tpl}")
-        return openpyxl.load_workbook(str(tpl))
-    return None
+def _append_rows_2col(ws, rows: list[dict], col_keys: list[str]) -> None:
+    """Append dynamic rows to a 2-column sheet."""
+    for row_data in rows:
+        vals = [row_data.get(k, "") or "" for k in col_keys]
+        ws.append(vals)
+        row_idx = ws.max_row
+        for col_i in range(1, 3):
+            cell = ws.cell(row=row_idx, column=col_i)
+            cell.font = CELL_FONT
+            cell.alignment = WRAP
+            cell.border = BORDER
 
+
+def _set_col_widths(ws, widths: list[int]) -> None:
+    for i, w in enumerate(widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+
+# ── Main generator ────────────────────────────────────────────────────────────
 
 def generate_excel(analysis: dict, output_dir: str) -> str:
-    logger.info("PASO 3: Generando Excel con Claude Sonnet…")
-    excel_data = _call_claude(analysis)
-    logger.info(f"PASO 3: Datos recibidos ({len(excel_data.get('hojas', []))} hojas). Construyendo Excel…")
+    logger.info("PASO 3: Extrayendo datos con Claude Sonnet para Excel…")
+    data = _call_claude(analysis)
+    logger.info("PASO 3: Datos recibidos. Construyendo Excel desde plantilla…")
 
-    wb = _load_base_workbook()
-    if wb is None:
-        wb = openpyxl.Workbook()
-        wb.remove(wb.active)
-    # If template was loaded, generated sheets are appended after existing ones
-
-    for sheet_data in excel_data.get("hojas", []):
-        try:
-            _write_sheet(wb, sheet_data)
-        except Exception as e:
-            logger.warning(f"PASO 3: Error en hoja '{sheet_data.get('nombre')}': {e}")
-
+    # Always use the user's template as base
+    tpl = TEMPLATES_DIR / "excel" / "plantilla.xlsx"
     expediente = analysis.get("identificacion", {}).get("expediente", "licitacion")
     safe_exp = re.sub(r'[^\w\-]', '_', expediente)[:50]
     xlsx_path = str(Path(output_dir) / f"seguimiento_{safe_exp}.xlsx")
+
+    if tpl.exists():
+        shutil.copy2(str(tpl), xlsx_path)
+        wb = openpyxl.load_workbook(xlsx_path)
+    else:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+        # Create sheets from scratch with same names as template
+        for name in ["Resumen licitación", "Cronograma", "Datos de contacto",
+                     "Procedimiento", "Criterios", "Solvencias", "Penalidades",
+                     "Condiciones especiales", "Notificaciones"]:
+            wb.create_sheet(name)
+        logger.warning("PASO 3: No se encontró plantilla.xlsx — Excel creado desde cero")
+
+    sheet_map = {ws.title: ws for ws in wb.worksheets}
+
+    # ── Resumen licitación ──
+    if "Resumen licitación" in sheet_map:
+        ws = sheet_map["Resumen licitación"]
+        _fill_kv_sheet(ws, data.get("resumen", {}))
+        _set_col_widths(ws, [42, 60])
+        _style_header_row(ws, 2)
+
+    # ── Cronograma ──
+    if "Cronograma" in sheet_map:
+        ws = sheet_map["Cronograma"]
+        _fill_kv_sheet(ws, data.get("cronograma", {}))
+        _set_col_widths(ws, [42, 30])
+        _style_header_row(ws, 2)
+
+    # ── Datos de contacto ──
+    if "Datos de contacto" in sheet_map:
+        ws = sheet_map["Datos de contacto"]
+        _fill_kv_sheet(ws, data.get("contacto", {}))
+        _set_col_widths(ws, [42, 60])
+        _style_header_row(ws, 2)
+
+    # ── Procedimiento ──
+    if "Procedimiento" in sheet_map:
+        ws = sheet_map["Procedimiento"]
+        _fill_kv_sheet(ws, data.get("procedimiento", {}))
+        _set_col_widths(ws, [42, 80])
+        _style_header_row(ws, 2)
+
+    # ── Criterios ──
+    if "Criterios" in sheet_map:
+        ws = sheet_map["Criterios"]
+        _style_header_row(ws, 3)
+        _append_rows_3col(ws, data.get("criterios", []),
+                          ["Criterio de adjudicacion", "Ponderación máxima", "Regla / Fórmula"])
+        _set_col_widths(ws, [50, 20, 70])
+
+    # ── Solvencias ──
+    if "Solvencias" in sheet_map:
+        ws = sheet_map["Solvencias"]
+        _style_header_row(ws, 3)
+        _append_rows_3col(ws, data.get("solvencias", []),
+                          ["Tipo", "Exigencia", "Observaciones"])
+        _set_col_widths(ws, [25, 50, 60])
+
+    # ── Penalidades ──
+    if "Penalidades" in sheet_map:
+        ws = sheet_map["Penalidades"]
+        _style_header_row(ws, 3)
+        _append_rows_3col(ws, data.get("penalidades", []),
+                          ["Ámbito", "Supuesto", "Consecuencia/Importe"])
+        _set_col_widths(ws, [25, 60, 40])
+
+    # ── Condiciones especiales ──
+    if "Condiciones especiales" in sheet_map:
+        ws = sheet_map["Condiciones especiales"]
+        _style_header_row(ws, 2)
+        _append_rows_2col(ws, data.get("condiciones_especiales", []),
+                          ["Ámbito", "Condición"])
+        _set_col_widths(ws, [25, 100])
+
+    # ── Notificaciones ──
+    if "Notificaciones" in sheet_map:
+        ws = sheet_map["Notificaciones"]
+        _style_header_row(ws, 2)
+        _append_rows_2col(ws, data.get("notificaciones", []),
+                          ["Aspecto", "Detalle"])
+        _set_col_widths(ws, [35, 80])
+
+    # ── Sobres (1, 2 o 3 según el pliego) ──
+    # Remove template's "Sobre único" and recreate dynamically
+    sobres_data = data.get("sobres", [])
+    tpl_sobre = "Sobre único"
+    if tpl_sobre in sheet_map and sobres_data:
+        del wb[tpl_sobre]
+
+    for sobre in sobres_data:
+        ws_name = sobre.get("nombre", "Sobre")[:31]
+        ws = wb.create_sheet(title=ws_name)
+        ws.append(["Bloque", "Documento / Requisito", "Detalle"])
+        _style_header_row(ws, 3)
+        _append_rows_3col(ws, sobre.get("filas", []),
+                          ["Bloque", "Documento / Requisito", "Detalle"])
+        _set_col_widths(ws, [25, 60, 80])
+
+    # If no sobres data, keep original template sheet
+    if not sobres_data and tpl_sobre in sheet_map:
+        logger.warning("PASO 3: Sin datos de sobres, hoja 'Sobre único' permanece vacía")
+
     wb.save(xlsx_path)
     logger.info(f"PASO 3: Excel guardado en {xlsx_path}")
     return xlsx_path

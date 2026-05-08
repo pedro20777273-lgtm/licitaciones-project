@@ -1,51 +1,96 @@
-Eres un experto en licitaciones públicas españolas. Basándote en el análisis JSON proporcionado, genera los datos para un Excel de seguimiento de licitación.
+Eres un experto en licitaciones públicas españolas. Basándote en el análisis JSON proporcionado, extrae los datos para rellenar el Excel de seguimiento.
 
-Devuelve ÚNICAMENTE un objeto JSON con la siguiente estructura. Sin texto adicional, sin bloques de código markdown.
+Devuelve ÚNICAMENTE este JSON (sin texto adicional, sin bloques de código markdown):
 
 {
-  "hojas": [
+  "resumen": {
+    "Órgano de contratación": "",
+    "Expediente (tipo)": "",
+    "Objeto": "",
+    "CPV principal": "",
+    "Presupuesto base de licitación (sin IVA)": "",
+    "IVA (21%)": "",
+    "Importe total (con IVA)": "",
+    "Valor estimado": "",
+    "Número de lotes": "",
+    "Procedimiento": "",
+    "Revisión de precios": "",
+    "Garantías (provisional/definitiva)": "",
+    "Financiación UE": "",
+    "Código NUTS": "",
+    "Lugar de entrega": "",
+    "Plazo de entrega por pedido": "",
+    "Garantía de los suministros": "",
+    "Idiomas de la oferta": "",
+    "Validez de la oferta": "",
+    "Variantes": "",
+    "Muestras": "",
+    "Lugar de presentación": "",
+    "Órgano (titular)": ""
+  },
+  "cronograma": {
+    "Publicación": "",
+    "Límite elevar consulta": "",
+    "Límite respuesta": "",
+    "Límite presentación de ofertas": ""
+  },
+  "contacto": {
+    "Organismo": "",
+    "Departamento/Unidad": "",
+    "Dirección": "",
+    "Oficinas (ubicación detallada)": "",
+    "Teléfono": "",
+    "Fax": "",
+    "Email": "",
+    "Perfil del contratante": "",
+    "Horario de información": ""
+  },
+  "procedimiento": {
+    "Publicidad": "",
+    "Subasta electrónica": "",
+    "Presentación de ofertas": "",
+    "Apertura": "",
+    "Incidencias técnicas último día": "",
+    "Plazo subsanación defectos/omisiones": "",
+    "Requerimientos justificativos adicionales": "",
+    "Ofertas anormalmente bajas – trámite": "",
+    "Adjudicación": "",
+    "Formalización": "",
+    "Desempate (preferencias)": ""
+  },
+  "criterios": [
+    {"Criterio de adjudicacion": "", "Ponderación máxima": "", "Regla / Fórmula": ""}
+  ],
+  "solvencias": [
+    {"Tipo": "", "Exigencia": "", "Observaciones": ""}
+  ],
+  "penalidades": [
+    {"Ámbito": "", "Supuesto": "", "Consecuencia/Importe": ""}
+  ],
+  "condiciones_especiales": [
+    {"Ámbito": "", "Condición": ""}
+  ],
+  "notificaciones": [
+    {"Aspecto": "", "Detalle": ""}
+  ],
+  "sobres": [
     {
-      "nombre": "nombre de la hoja (máximo 31 caracteres)",
+      "nombre": "Sobre único",
       "filas": [
-        {
-          "campo": "nombre del campo o concepto",
-          "detalle": "valor o descripción detallada",
-          "es_critico": false
-        }
+        {"Bloque": "", "Documento / Requisito": "", "Detalle": ""}
       ]
     }
   ]
 }
 
-Genera las siguientes hojas en este orden. El número total de hojas varía según los sobres que tenga la licitación:
-
-1. "RESUMEN EJECUTIVO" — Los 10-15 puntos más importantes de la licitación. Marca como críticos (es_critico: true) los que requieren acción inmediata.
-
-2. "IDENTIFICACIÓN" — Todos los datos de identificación del contrato (expediente, objeto, órgano, tipo, procedimiento, CPV, valor estimado, presupuesto base sin IVA, presupuesto base con IVA, duración, prórrogas, lugar de ejecución, fecha publicación, fecha límite oferta).
-
-3. "CALENDARIO" — Todas las fechas y plazos. Marca como críticos los plazos de presentación de oferta y apertura de sobres.
-
-4. "REQUISITOS" — Todos los requisitos de participación (habilitación, solvencia económica, solvencia técnica, clasificación). Marca como críticos los que Hologic podría no cumplir o requieren preparación especial.
-
-5. "CRITERIOS ADJUDICACIÓN" — Todos los criterios con sus pesos y descripción de valoración. Incluye fórmulas si las hay.
-
-6 a N. "SOBRE X — [NOMBRE]" (UNA HOJA POR SOBRE) — Examina el campo "documentacion_requerida" del análisis JSON. Por cada sobre identificado genera una hoja separada. Ejemplos de nombre: "SOBRE 1 - ADMINISTRATIVO", "SOBRE 2 - TÉCNICO", "SOBRE 3 - ECONÓMICO". Si el pliego usa nomenclatura distinta (Parte A/B, Anexo I/II, etc.) úsala. Lista TODOS los documentos de ese sobre con checkbox y descripción de cómo obtenerlos/prepararlos. Marca como críticos los que requieren preparación especial o son difíciles de obtener. Si solo hay 1 sobre, genera 1 hoja; si hay 2, genera 2; si hay 3, genera 3.
-
-Continúa con las hojas fijas:
-
-N+1. "GARANTÍAS" — Información sobre garantías provisional, definitiva y complementaria.
-
-N+2. "ALERTAS CRÍTICAS" — Todas las restricciones excluyentes y alertas. Todas las filas de esta hoja deben tener es_critico: true.
-
-N+3. "ERRORES DETECTADOS" — Contradicciones y errores encontrados en los documentos. Marca como críticos los que pueden causar exclusión si no se resuelven.
-
-N+4. "DECLARACIONES" — Lista de todos los formularios y declaraciones a completar con su origen y campos.
-
-N+5. "ANÁLISIS ESTRATÉGICO" — Fortalezas, debilidades, riesgos y recomendación final de presentación.
-
-REGLAS:
-- Cada fila tiene exactamente "campo", "detalle" y "es_critico" (boolean)
-- "es_critico": true para fechas límite, importes clave, requisitos excluyentes, errores graves
-- El campo "detalle" debe ser completo y autoexplicativo
-- Máximo 200 filas por hoja
-- Responde ÚNICAMENTE con el JSON válido
+INSTRUCCIONES:
+- "sobres": genera UN elemento por sobre identificado en el análisis. Si hay 1 sobre → nombre "Sobre único". Si hay 2 → "Sobre 1 — Administrativo" y "Sobre 2 — Oferta". Si hay 3 → "Sobre 1 — Administrativo", "Sobre 2 — Técnico", "Sobre 3 — Económico". Adapta los nombres según el pliego.
+- "criterios": una fila por cada criterio de adjudicación (técnicos, económicos, sociales, medioambientales).
+- "solvencias": una fila por cada requisito de solvencia económica y técnica.
+- "penalidades": extrae del pliego todas las penalidades y sanciones previstas.
+- "condiciones_especiales": condiciones de ejecución especiales (sociales, medioambientales, laborales).
+- "notificaciones": aspectos sobre cómo se notifica (plataforma, plazos, medios).
+- Si un campo no aparece en el pliego, escribe "No especificado" o déjalo vacío.
+- Para campos de importe usa formato: "XXX.XXX,XX €"
+- Para fechas usa formato: "DD/MM/AAAA HH:MM"
+- Responde ÚNICAMENTE con el JSON válido.

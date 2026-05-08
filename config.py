@@ -7,7 +7,10 @@ load_dotenv()
 BASE_DIR = Path(__file__).parent
 PROMPTS_DIR = BASE_DIR / "prompts"
 OUTPUT_DIR = BASE_DIR / "output"
+TEMPLATES_DIR = BASE_DIR / "templates"
 OUTPUT_DIR.mkdir(exist_ok=True)
+(TEMPLATES_DIR / "declaraciones").mkdir(parents=True, exist_ok=True)
+(TEMPLATES_DIR / "excel").mkdir(parents=True, exist_ok=True)
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "morontap4@gmail.com")

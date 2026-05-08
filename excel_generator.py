@@ -9,7 +9,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
-from config import ANTHROPIC_API_KEY, MODEL_FAST, PROMPTS_DIR
+from config import ANTHROPIC_API_KEY, MODEL_FAST, PROMPTS_DIR, TEMPLATES_DIR
 
 logger = logging.getLogger(__name__)
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -53,8 +53,28 @@ def _call_claude(analysis: dict) -> dict:
     return _extract_json(raw)
 
 
+def _unique_table_name(wb: openpyxl.Workbook, base: str) -> str:
+    existing = set()
+    for ws in wb.worksheets:
+        for tbl in ws.tables.values():
+            existing.add(tbl.displayName)
+    name = base[:20]
+    if name not in existing:
+        return name
+    i = 2
+    while f"{name}_{i}" in existing:
+        i += 1
+    return f"{name}_{i}"
+
+
 def _write_sheet(wb: openpyxl.Workbook, sheet_data: dict) -> None:
     name = sheet_data["nombre"][:31]
+    # Avoid duplicate sheet names
+    base_name = name
+    suffix = 2
+    while name in [ws.title for ws in wb.worksheets]:
+        name = f"{base_name[:28]}_{suffix}"
+        suffix += 1
     ws = wb.create_sheet(title=name)
     filas = sheet_data.get("filas", [])
 
@@ -80,7 +100,8 @@ def _write_sheet(wb: openpyxl.Workbook, sheet_data: dict) -> None:
     # Table style
     if ws.max_row > 1:
         table_ref = f"A1:{get_column_letter(2)}{ws.max_row}"
-        table = Table(displayName=f"Tabla_{name.replace(' ', '_')[:20]}", ref=table_ref)
+        tbl_name = _unique_table_name(wb, f"Tabla_{name.replace(' ', '_')}")
+        table = Table(displayName=tbl_name, ref=table_ref)
         table.tableStyleInfo = TableStyleInfo(
             name="TableStyleMedium2",
             showFirstColumn=False,
@@ -95,13 +116,25 @@ def _write_sheet(wb: openpyxl.Workbook, sheet_data: dict) -> None:
     ws.row_dimensions[1].height = 20
 
 
+def _load_base_workbook() -> openpyxl.Workbook | None:
+    """Returns the user's Excel template if it exists, else None."""
+    tpl = TEMPLATES_DIR / "excel" / "plantilla.xlsx"
+    if tpl.exists():
+        logger.info(f"PASO 3: Usando plantilla Excel base: {tpl}")
+        return openpyxl.load_workbook(str(tpl))
+    return None
+
+
 def generate_excel(analysis: dict, output_dir: str) -> str:
     logger.info("PASO 3: Generando Excel con Claude Sonnet…")
     excel_data = _call_claude(analysis)
     logger.info(f"PASO 3: Datos recibidos ({len(excel_data.get('hojas', []))} hojas). Construyendo Excel…")
 
-    wb = openpyxl.Workbook()
-    wb.remove(wb.active)  # remove default sheet
+    wb = _load_base_workbook()
+    if wb is None:
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+    # If template was loaded, generated sheets are appended after existing ones
 
     for sheet_data in excel_data.get("hojas", []):
         try:

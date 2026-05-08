@@ -1,0 +1,9 @@
+Coloca aquí tu plantilla Excel con el formato corporativo de Hologic.
+
+Nombre del archivo: plantilla.xlsx
+
+Si existe este archivo, el sistema lo usará como base y añadirá las hojas
+de análisis de la licitación a continuación de las hojas que ya contenga
+(por ejemplo: portada, logo, hoja de instrucciones, etc.).
+
+Si no existe ningún archivo plantilla.xlsx, el sistema crea el Excel desde cero.

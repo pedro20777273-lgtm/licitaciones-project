@@ -129,19 +129,31 @@ def main() -> None:
         logger.error(msg)
         errors.append(msg)
 
-    # ── PASO 5: Declaraciones ───────────────────────────────────────────────
+    # ── PASO 5a: Declaraciones del propio pliego ────────────────────────────
     try:
-        from declaration_filler import fill_declarations
+        from declaration_filler import fill_declarations, fill_from_templates
         declaraciones = analysis.get("declaraciones_a_rellenar", [])
         file_map = {info["name"]: info["path"] for info in files_info}
         if declaraciones:
             docx_files = fill_declarations(declaraciones, file_map, analysis, output_dir)
             attachments.extend(docx_files)
-            logger.info(f"PASO 5: OK → {len(docx_files)} declaraciones generadas")
+            logger.info(f"PASO 5a: OK → {len(docx_files)} declaraciones del pliego")
         else:
-            logger.info("PASO 5: Sin declaraciones a rellenar")
+            logger.info("PASO 5a: Sin declaraciones explícitas en el pliego")
     except Exception as e:
-        msg = f"PASO 5 FALLIDO: {e}"
+        msg = f"PASO 5a FALLIDO: {e}"
+        logger.error(msg)
+        errors.append(msg)
+
+    # ── PASO 5b: Plantillas genéricas del usuario ───────────────────────────
+    try:
+        from declaration_filler import fill_from_templates
+        tpl_files = fill_from_templates(analysis, output_dir)
+        attachments.extend(tpl_files)
+        if tpl_files:
+            logger.info(f"PASO 5b: OK → {len(tpl_files)} plantillas genéricas rellenadas")
+    except Exception as e:
+        msg = f"PASO 5b FALLIDO: {e}"
         logger.error(msg)
         errors.append(msg)
 

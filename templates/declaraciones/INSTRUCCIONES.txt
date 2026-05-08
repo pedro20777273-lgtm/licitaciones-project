@@ -1,0 +1,13 @@
+Coloca aquí tus plantillas DOCX de declaraciones habituales en licitaciones.
+
+Ejemplos comunes:
+- declaracion_responsable.docx       (declaración responsable general)
+- deuc.docx                          (Documento Europeo Único de Contratación)
+- compromiso_adscripcion_medios.docx (compromiso de adscripción de medios)
+- declaracion_capacidad.docx         (declaración de capacidad y representación)
+- declaracion_no_prohibicion.docx    (declaración de no estar incurso en prohibiciones)
+- declaracion_confidencialidad.docx  (declaración de confidencialidad)
+- declaracion_ute.docx               (intención de constituir UTE si aplica)
+
+El sistema evaluará automáticamente cuáles aplican a cada licitación
+y rellenará los campos en blanco con los datos de Hologic Iberia.

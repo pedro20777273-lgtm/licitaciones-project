@@ -1,12 +1,19 @@
 import logging
 import mimetypes
 import smtplib
+import socket
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
 from config import DELIVERY_EMAIL, GMAIL_APP_PASSWORD, GMAIL_USER
+
+# Force IPv4 — some servers don't support IPv6 SMTP
+_orig_getaddrinfo = socket.getaddrinfo
+def _ipv4_only(*args, **kwargs):
+    return [r for r in _orig_getaddrinfo(*args, **kwargs) if r[0] == socket.AF_INET]
+socket.getaddrinfo = _ipv4_only
 
 logger = logging.getLogger(__name__)
 

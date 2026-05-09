@@ -54,7 +54,18 @@ def convert_file(path: str) -> dict:
             result["content_md"] = _convert_with_markitdown(path)
             logger.info(f"{name}: DOCX convertido a Markdown ({len(result['content_md'])} chars)")
         except Exception as e:
-            logger.error(f"{name}: no se pudo convertir DOCX: {e}")
+            # Fallback for old .doc: extract text with python-docx or raw read
+            try:
+                from docx import Document as _Doc
+                doc = _Doc(path)
+                text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+                if text:
+                    result["content_md"] = text
+                    logger.info(f"{name}: .doc leído con python-docx ({len(text)} chars)")
+                else:
+                    logger.error(f"{name}: no se pudo extraer texto del .doc")
+            except Exception as e2:
+                logger.error(f"{name}: no se pudo convertir .doc: {e} / {e2}")
     else:
         logger.warning(f"{name}: formato no soportado ({suffix}), ignorando")
 

@@ -31,7 +31,7 @@ def cmd_indexar(force: bool) -> None:
     index_templates(force=force)
 
 
-def cmd_procesar(carpeta: str) -> None:
+def cmd_procesar(carpeta: str, sin_correo: bool = False) -> None:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_path = str(OUTPUT_DIR / f"log_{timestamp}.txt")
     _setup_logging(log_path)
@@ -147,14 +147,17 @@ def cmd_procesar(carpeta: str) -> None:
 
     # ── PASO 6: Email ───────────────────────────────────────────────────────
     attachments.append(log_path)
-    try:
-        from email_sender import send_results
-        send_results(analysis, attachments)
-        logger.info("PASO 6: OK → Email enviado")
-    except Exception as e:
-        msg = f"PASO 6 FALLIDO: {e}"
-        logger.error(msg)
-        errors.append(msg)
+    if sin_correo:
+        logger.info("PASO 6: Omitido (--sin-correo)")
+    else:
+        try:
+            from email_sender import send_results
+            send_results(analysis, attachments)
+            logger.info("PASO 6: OK → Email enviado")
+        except Exception as e:
+            msg = f"PASO 6 FALLIDO: {e}"
+            logger.error(msg)
+            errors.append(msg)
 
     # ── Resumen final ───────────────────────────────────────────────────────
     logger.info("=" * 60)
@@ -178,6 +181,8 @@ def main() -> None:
     proc = sub.add_parser("procesar", help="Procesa una licitación")
     proc.add_argument("--carpeta", required=True,
                       help="Carpeta con los documentos PDF/DOCX")
+    proc.add_argument("--sin-correo", action="store_true",
+                      help="No enviar email al finalizar")
 
     # One-time indexing command
     idx = sub.add_parser("indexar-plantillas",
@@ -187,6 +192,7 @@ def main() -> None:
 
     # Legacy: support bare --carpeta without subcommand
     parser.add_argument("--carpeta", help=argparse.SUPPRESS)
+    parser.add_argument("--sin-correo", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--indexar-plantillas", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--forzar", action="store_true", help=argparse.SUPPRESS)
 
@@ -203,7 +209,8 @@ def main() -> None:
         if not Path(carpeta).is_dir():
             print(f"ERROR: La carpeta no existe: {carpeta}")
             sys.exit(1)
-        cmd_procesar(carpeta)
+        sin_correo = getattr(args, "sin_correo", False)
+        cmd_procesar(carpeta, sin_correo=sin_correo)
     else:
         parser.print_help()
 

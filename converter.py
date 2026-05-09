@@ -54,18 +54,31 @@ def convert_file(path: str) -> dict:
             result["content_md"] = _convert_with_markitdown(path)
             logger.info(f"{name}: DOCX convertido a Markdown ({len(result['content_md'])} chars)")
         except Exception as e:
-            # Fallback for old .doc: extract text with python-docx or raw read
+            # Fallback 1: python-docx (works for .docx even if markitdown fails)
             try:
                 from docx import Document as _Doc
                 doc = _Doc(path)
                 text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
                 if text:
                     result["content_md"] = text
-                    logger.info(f"{name}: .doc leído con python-docx ({len(text)} chars)")
-                else:
-                    logger.error(f"{name}: no se pudo extraer texto del .doc")
-            except Exception as e2:
-                logger.error(f"{name}: no se pudo convertir .doc: {e} / {e2}")
+                    logger.info(f"{name}: leído con python-docx ({len(text)} chars)")
+                    return result
+            except Exception:
+                pass
+
+            # Fallback 2: catdoc (binary .doc / Word 97-2003)
+            try:
+                import subprocess
+                r = subprocess.run(["catdoc", path], capture_output=True, timeout=30)
+                text = r.stdout.decode("latin-1", errors="replace").strip()
+                if text:
+                    result["content_md"] = text
+                    logger.info(f"{name}: .doc leído con catdoc ({len(text)} chars)")
+                    return result
+            except Exception as e3:
+                logger.debug(f"{name}: catdoc falló: {e3}")
+
+            logger.error(f"{name}: no se pudo convertir .doc: {e}")
     else:
         logger.warning(f"{name}: formato no soportado ({suffix}), ignorando")
 

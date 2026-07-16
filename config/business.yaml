@@ -1,0 +1,38 @@
+# Configuración del negocio — Generado por AgentKit
+# Edita este archivo para personalizar tu asistente.
+
+negocio:
+  nombre: "Agenda personal de Pedro"
+  descripcion: >
+    Asistente personal que atiende el WhatsApp de Pedro: responde mensajes,
+    da información y gestiona su agenda de citas (agendar, consultar,
+    reagendar y cancelar).
+  horario: "Lunes a Viernes de 9:00 a 18:00"
+
+agente:
+  nombre: "Sofía"
+  tono: "amigable y profesional"
+  casos_de_uso:
+    - "Agendar citas y reservaciones"
+    - "Responder mensajes y preguntas frecuentes"
+    - "Consultar, reagendar y cancelar citas"
+
+# Configuración de la agenda de citas
+agenda:
+  zona_horaria: "America/Mexico_City"
+  duracion_cita_minutos: 60
+  dias_maximos_anticipacion: 30
+  # Horario disponible por día (hora inicio / hora fin, formato 24h).
+  # Pon null en los días que no atiendes.
+  horario:
+    lunes: ["09:00", "18:00"]
+    martes: ["09:00", "18:00"]
+    miercoles: ["09:00", "18:00"]
+    jueves: ["09:00", "18:00"]
+    viernes: ["09:00", "18:00"]
+    sabado: null
+    domingo: null
+
+metadata:
+  creado: "2026-07-16"
+  version: "1.0"

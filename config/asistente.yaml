@@ -1,0 +1,23 @@
+# Configuración del asistente personal — Generado con AgentKit adaptado
+asistente:
+  nombre: "Aria"
+  tono: "amigable y eficiente"
+  idioma: "español"
+
+dueno:
+  # El nombre con el que el asistente se dirige a ti
+  nombre: "Pedro"
+
+# Plataformas donde el asistente busca citas médicas.
+# {especialidad} y {ciudad} se sustituyen al buscar.
+plataformas_medicas:
+  - nombre: "Doctoralia"
+    url_busqueda: "https://www.doctoralia.com.mx/buscar?q={especialidad}&loc={ciudad}"
+  - nombre: "Top Doctors"
+    url_busqueda: "https://www.topdoctors.mx/buscar/?q={especialidad}%20{ciudad}"
+  - nombre: "Doctoralia España"
+    url_busqueda: "https://www.doctoralia.es/buscar?q={especialidad}&loc={ciudad}"
+
+metadata:
+  creado: "2026-07-16"
+  version: "1.0"

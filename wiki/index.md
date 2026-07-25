@@ -11,8 +11,9 @@ actualizado: 2026-07-14
 | Página | Qué contiene |
 |---|---|
 | [sintesis.md](sintesis.md) | Qué es este cerebro y la tesis actual (3 hallazgos clave) |
-| [mejoras.md](mejoras.md) | Gaps, deuda técnica, automatizaciones de alto retorno, escalado — **página viva** |
+| [mejoras.md](mejoras.md) | Gaps, deuda técnica, automatizaciones de alto retorno, escalado — **página viva** (incluye lo ya ejecutado) |
 | [skills/mapa-skills.md](skills/mapa-skills.md) | Las 9 skills sobre el ciclo de vida, con madurez |
+| `../skills/README.md` | ⚙️ Arsenal **ejecutable** en formato Agent Skills (capa nueva, fuera de la wiki) |
 
 ## 🛠 Skills (9)
 | Página | Skill | Fase | Madurez |

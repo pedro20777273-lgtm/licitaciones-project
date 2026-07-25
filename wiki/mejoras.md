@@ -10,6 +10,28 @@ actualizado: 2026-07-14
 Página **viva**: se actualiza en cada ingesta/lint. Organizada en 4 bloques: gaps de cobertura,
 deuda técnica del arsenal, automatizaciones de alto retorno, y escalado.
 
+> ⚡ **Regla de esta página** (del contrato de interacción de Pedro): antes de proponer o construir
+> un sistema nuevo, ejecutar lo pendiente de aquí. Máximo 2 opciones por decisión, con
+> recomendación. Ver [pedro-moronta](entidades/pedro-moronta.md).
+
+## ✅ Ejecutado el 2026-07-14 (con lo disponible en el repo)
+- **`skills/` creado en formato Agent Skills** (carpeta por skill) — ver `skills/README.md` con
+  el semáforo de ejecutabilidad por skill.
+- **`find_item_v2.py` extraído a script ejecutable real** y probado (4/4 casos, BD de 334 ítems).
+- **`rellenar_deuc.py` reconstruido** desde la especificación de SKILL 6 v4.0 y probado con XML
+  sintético (rellena 11 campos, QC todo-True, aborta ante un Request). ⚠️ Validar con un
+  ESPDResponse real antes de producción.
+- **SKILL.md de A2 reconstruido** desde la plantilla Excel (contrato de 10 hojas documentado).
+- **`comparison-dimensions.md` de A1 reconstruido**; estructura `hologic-tcs/` lista para poblar.
+- **Check Aval operativizado**: contactos de bastanteo (plantilla), log de errores inicializado,
+  carpeta de modelos CCAA con instrucciones.
+- **Fuente única de datos fijos**: `skills/_shared/datos_fijos_hologic.md` (§2.3 resuelto para
+  skills nuevas; las viejas se migran al tocarlas).
+- **OCR de SKILL_5.pdf: intentado y NO viable** en este entorno (sin tesseract/poppler/PyPI).
+  Confirmado: necesita re-subida en texto (§ preguntas abiertas 1).
+- **Master prompt de Pedro ingerido** → contrato de interacción en `CLAUDE.md` y perfil en
+  [pedro-moronta](entidades/pedro-moronta.md).
+
 ## 1. Gaps de cobertura del ciclo de vida
 
 Del [mapa de skills](skills/mapa-skills.md), las fases sin skill:

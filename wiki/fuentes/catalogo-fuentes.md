@@ -26,6 +26,8 @@ actualizado: 2026-07-14
 | `Order_Management/Recursos a consultar 2/PRQ_LOG_SEMANA28_2026 (4).md` | Log huddle semana 28 | ✅ ingerido | [cuentas-clave](../entidades/cuentas-clave.md), [gmc-quote-bsa](../conceptos/gmc-quote-bsa.md) |
 | `Order_Management/Recursos a consultar 2/New CC&T Huddle tracker.md` | Export crudo del Excel del huddle (732 KB, mayormente celdas vacías) | 🟡 revisado por muestreo; bajo valor como texto | [prq-resolver](../skills/prq-resolver.md) (contexto huddle) |
 
+| `master_prompt_pedro_julio2026.md` | 🔒 Perfil personal completo + patrones + contrato de interacción (julio 2026). **Sensible: repo debe ser privado** | ✅ ingerido | [pedro-moronta](../entidades/pedro-moronta.md), `CLAUDE.md` (sección "Cómo trabajar con Pedro"), [mejoras](../mejoras.md) |
+
 ## Convención para próximas ingestas
 Depositar la fuente en `row/` (idealmente con la extensión correcta) y pedir «ingesta <archivo>».
 Se actualizarán las páginas afectadas, este catálogo, el [index](../index.md) y el [log](../log.md).

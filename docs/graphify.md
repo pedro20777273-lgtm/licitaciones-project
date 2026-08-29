@@ -10,9 +10,13 @@ uv tool install graphifyy      # o: pipx install graphifyy
 graphify install               # registra la skill en el asistente (~/.claude, ~/.codex, ...)
 ```
 
-En este repo la skill quedó registrada a nivel de proyecto en
-`.claude/skills/graphify/` (SKILL.md + `references/`), por lo que `/graphify`
-está disponible sin tocar la configuración global del usuario.
+La skill está instalada globalmente en `~/.claude/skills/graphify/`
+(SKILL.md + `references/`), y `graphify install` añadió un bloque de tres líneas
+a `~/.claude/CLAUDE.md` que la anuncia y engancha el trigger `/graphify`. No
+instala hooks ni toca `settings.json`.
+
+El repo conserva además una copia a nivel de proyecto en
+`.claude/skills/graphify/`; es redundante con la global y puede borrarse.
 
 El CLI expone dos ejecutables: `graphify` y `graphify-mcp` (servidor MCP para
 que un agente consulte el grafo como herramienta).
@@ -101,6 +105,8 @@ haya API key.
 - Extras opcionales no instalados: `sql`, `dm`, `commonlisp` — 9 ficheros del
   corpus de prueba no aportaron nodos por eso. Se arreglan con
   `pip install "graphifyy[sql]"` y equivalentes.
+- `graphify install --platform claude` escribe en `~/.claude`, fuera del repo:
+  esos cambios no quedan versionados aquí y hay que repetirlos en cada máquina.
 - Este repo (`licitaciones-project`) todavía no tiene código: `graphify extract .`
   encuentra 0 ficheros de código y el grafo sale vacío. Volverá a tener sentido
   en cuanto haya fuentes.

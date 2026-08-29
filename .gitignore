@@ -1,1 +1,3 @@
 graphify-out/
+
+# assets vendorizados: se regeneran con `npm pack mermaid@11.4.1`

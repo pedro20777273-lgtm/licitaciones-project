@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clora · Pedido confirmado</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Página de gracias: confirmación arriba, línea temporal de lo que pasa ahora, oferta de segundo envío y redes */
+:root{
+  --clorofila:#173F2A; --hoja:#2F6B45; --menta:#E3F0E6; --papel:#F8FAF6; --flor:#B9A9EA; --tinta:#13261B; --gris:#53625A; --linea:#D3DFD6;
+  --f-display:'Gloock', Georgia, serif; --f-body:'Figtree', system-ui, sans-serif; --f-mono:'IBM Plex Mono', ui-monospace, monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font:400 17px/1.6 var(--f-body)}
+.w{max-width:680px;margin-inline:auto;padding-inline:20px}
+header{padding-block:22px;font:400 1.7rem/1 var(--f-display);color:var(--clorofila)}
+header a{color:inherit;text-decoration:none}
+main{display:grid;gap:36px;padding-block:20px 80px}
+h1{font:400 clamp(2.4rem,6vw,3.4rem)/1.05 var(--f-display);margin:0}
+h2{font:400 1.8rem/1.1 var(--f-display);margin:0}
+p{margin:0}
+.eyebrow{font:500 .74rem/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--hoja)}
+.ok{width:64px;height:64px;border-radius:50%;background:var(--menta);display:grid;place-items:center;color:var(--hoja)}
+.linea{list-style:none;margin:0;padding:0;display:grid;gap:0;border-left:2px solid var(--linea);margin-left:8px}
+.linea li{position:relative;padding:0 0 20px 24px}
+.linea li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--flor)}
+.linea b{display:block}
+.linea span{color:var(--gris);font-size:.95rem}
+.oferta{background:var(--clorofila);color:var(--papel);border-radius:20px;padding:26px;display:grid;gap:14px}
+.oferta .eyebrow{color:var(--flor)}
+.oferta p{color:#C9D8CE}
+.precio{display:flex;gap:12px;align-items:baseline;font-variant-numeric:tabular-nums}
+.precio b{font:400 2.4rem/1 var(--f-display);color:var(--papel)}
+.precio s{opacity:.6}
+.btn{display:inline-flex;justify-content:center;align-items:center;padding:15px 22px;border-radius:999px;font-weight:600;text-decoration:none;background:var(--flor);color:var(--tinta)}
+.btn.sec{background:transparent;color:var(--clorofila);box-shadow:inset 0 0 0 1.5px var(--clorofila)}
+.peq{font-size:.85rem;color:var(--gris)}
+</style>
+</head>
+<body>
+<header class="w"><a href="index.html">clora</a></header>
+<main class="w">
+  <section style="display:grid;gap:16px">
+    <div class="ok" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <p class="eyebrow">Pedido confirmado</p>
+    <h1>Gracias. Tu ritual verde ya está en camino.</h1>
+    <p>Te hemos enviado un correo con el resumen y la factura. Si no lo ves en unos minutos, revisa la carpeta de promociones.</p>
+  </section>
+
+  <section style="display:grid;gap:16px">
+    <h2>Lo que pasa ahora</h2>
+    <ol class="linea">
+      <li><b>Hoy</b><span>Preparamos tu pedido y te llega el número de seguimiento.</span></li>
+      <li><b>En 24-72 h</b><span>Lo recibes en casa (península).</span></li>
+      <li><b>El primer día</b><span>Dos cápsulas con el desayuno y un vaso de agua. Deja el bote a la vista.</span></li>
+      <li><b>Día 24</b><span>Te avisamos para que no te quedes sin bote.</span></li>
+    </ol>
+  </section>
+
+  <section class="oferta" aria-labelledby="h-oferta">
+    <p class="eyebrow">Solo en esta página</p>
+    <h2 id="h-oferta">¿Un bote para alguien de casa?</h2>
+    <p>Añade un bote más en un envío aparte, sin gastos de envío y con un 20 % de descuento.</p>
+    <p class="precio"><b>22,32 €</b> <s>27,90 €</s></p>
+    <a class="btn" id="btn-upsell" href="index.html#packs">Añadir un bote por 22,32 €</a>
+    <p class="peq" style="color:#9DB5A6">Es un pedido nuevo con su propio pago. Si no te interesa, no tienes que hacer nada.</p>
+  </section>
+
+  <section style="display:grid;gap:12px">
+    <h2>Mientras llega</h2>
+    <p>Síguenos en Instagram para ver de dónde sale cada ingrediente. Si tienes cualquier duda sobre tu pedido, escríbenos a <b>[hola@dominio]</b>.</p>
+    <div><a class="btn sec" href="https://www.instagram.com/" target="_blank" rel="noopener">Ver Clora en Instagram</a></div>
+    <p class="peq">Recuerda: complemento alimenticio. No superar la dosis diaria recomendada. No sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</p>
+  </section>
+</main>
+<script>
+/* Pega aquí el Stripe Payment Link del bote con −20 % (22,32 €, envío gratis). Sin enlace, el botón vuelve a los packs. */
+const UPSELL_LINK = '';
+if (UPSELL_LINK) document.getElementById('btn-upsell').href = UPSELL_LINK;
+</script>
+</body>
+</html>

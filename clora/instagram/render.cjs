@@ -170,6 +170,8 @@ const PIEZAS = [
     <p class="m" style="font-size:26px;letter-spacing:.12em;color:${C.florOsc};margin-top:18px">MENTA · PEREJIL · CLOROFILA + ZINC</p>
   </div>
 </div>` },
+  // anuncios de Meta: 3 ángulos × feed 4:5 y stories/reels 9:16 (zonas seguras: 250 px arriba, 340 px abajo)
+  ...anuncios(),
   // story de captación
   { id: 'story-lista', w: 1080, h: 1920, html: `
 <div class="pieza oscura" style="height:1920px">
@@ -199,6 +201,55 @@ const PIEZAS = [
   <svg viewBox="0 0 56 56" width="440" style="color:${C.clorofila}">${ico}</svg>
 </div>` }))
 ];
+
+function anuncios() {
+  const ficha = (ancho) => `<div class="ficha-ad" style="width:${ancho}px">
+    <b>Por dosis diaria · 2 cápsulas</b>
+    <div><span>Extracto de hoja de menta</span><span>200 mg</span></div>
+    <div><span>Hoja de perejil</span><span>200 mg</span></div>
+    <div><span>Extracto de hoja de alfalfa</span><span>150 mg</span></div>
+    <div><span>Zinc · 100 % VRN</span><span>10 mg</span></div>
+  </div>`;
+  const tres = `<div class="tres">${boteSVG(250)}${boteSVG(290)}${boteSVG(250)}</div>`;
+  const A = (h) => `
+<div class="pieza" style="background:${C.papel};height:${h}px">
+  <div style="position:absolute;left:96px;right:96px;top:${h > 1400 ? 260 : 96}px">
+    <p class="m eyebrow" style="color:${C.hoja}">LA FÓRMULA COMPLETA</p>
+    <h2 class="d" style="font-size:${h > 1400 ? 112 : 96}px;color:${C.clorofila};margin-top:24px">Cuatro ingredientes.<br><span style="color:${C.florOsc}">Cantidades a la vista.</span></h2>
+  </div>
+  <div style="position:absolute;left:96px;bottom:${h > 1400 ? 400 : 96}px">${ficha(560)}</div>
+  <div style="position:absolute;right:60px;bottom:${h > 1400 ? 370 : 70}px;filter:drop-shadow(0 24px 30px rgba(19,38,27,.2))">${boteSVG(400)}</div>
+</div>`;
+  const B = (h) => `
+<div class="pieza" style="background:${C.menta};height:${h}px">
+  <div style="position:absolute;left:96px;right:96px;top:${h > 1400 ? 260 : 96}px">
+    <p class="m eyebrow" style="color:${C.hoja}">TU RITUAL VERDE</p>
+    <h2 class="d" style="font-size:${h > 1400 ? 124 : 110}px;color:${C.clorofila};margin-top:24px">Diez segundos<br>cada mañana.</h2>
+  </div>
+  <div class="cifras" style="top:${h > 1400 ? 720 : 520}px">
+    <div><b class="d">2</b><span>cápsulas</span></div><div><b class="d">30</b><span>días</span></div><div><b class="d">1</b><span>bote</span></div>
+  </div>
+  <div style="position:absolute;left:50%;bottom:${h > 1400 ? 360 : 60}px;transform:translateX(-50%)">
+    <div style="position:absolute;width:520px;height:520px;border-radius:50%;background:${C.flor};left:-90px;top:120px"></div>
+    <div style="position:relative">${boteSVG(h > 1400 ? 440 : 340)}</div>
+  </div>
+</div>`;
+  const Cc = (h) => `
+<div class="pieza oscura" style="height:${h}px">
+  <div style="position:absolute;left:96px;right:96px;top:${h > 1400 ? 260 : 96}px">
+    <p class="m eyebrow" style="color:${C.flor}">LA LISTA VERDE</p>
+    <h2 class="d" style="font-size:${h > 1400 ? 120 : 104}px;color:${C.papel};margin-top:24px">Sé de los primeros.</h2>
+    <p class="d" style="font-size:${h > 1400 ? 340 : 300}px;line-height:.9;color:${C.flor};margin-top:30px">−15 %</p>
+    <p style="font-size:40px;color:#C9D8CE;margin-top:18px">en tu primer pedido el día del lanzamiento</p>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:${h > 1400 ? 360 : 70}px">${tres}</div>
+</div>`;
+  return [
+    ['anuncio-a-feed', A, 1350], ['anuncio-a-story', A, 1920],
+    ['anuncio-b-feed', B, 1350], ['anuncio-b-story', B, 1920],
+    ['anuncio-c-feed', Cc, 1350], ['anuncio-c-story', Cc, 1920]
+  ].map(([id, f, h]) => ({ id, w: 1080, h, html: f(h) }));
+}
 
 const CSS = `
 @font-face{font-family:'Gloock';src:url('../assets/fonts/Gloock-400.woff2')}
@@ -246,6 +297,17 @@ body{background:#888;font-family:Figtree,sans-serif;color:${C.tinta};display:gri
 .zn .sym{position:absolute;left:0;right:0;top:120px;text-align:center;font-size:280px}
 .zn .nom{position:absolute;left:0;right:0;bottom:84px;text-align:center;font-size:44px;font-weight:600}
 .zn .masa{position:absolute;right:44px;top:44px;font:400 30px/1 'IBM Plex Mono',monospace;color:${C.flor}}
+.ficha-ad{background:#fff;border:5px solid ${C.tinta};padding:28px 32px;font-size:30px}
+.ficha-ad b{display:block;font-size:34px;font-weight:700;border-bottom:12px solid ${C.tinta};padding-bottom:10px;margin-bottom:6px}
+.ficha-ad div{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:2px solid ${C.tinta}}
+.ficha-ad div:last-child{border-bottom:0}
+.ficha-ad div span:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+.cifras{position:absolute;left:96px;right:96px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.cifras b{display:block;font-size:150px;line-height:1;color:${C.clorofila}}
+.cifras span{font:500 28px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:${C.hoja}}
+.tres{display:flex;justify-content:center;align-items:flex-end}
+.tres svg{margin-inline:-30px}
+.tres svg:nth-child(2){position:relative;z-index:1}
 `;
 
 const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Clora · piezas Instagram</title><style>${CSS}</style></head><body>${DEFS}

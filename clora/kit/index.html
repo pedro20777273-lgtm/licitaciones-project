@@ -103,6 +103,12 @@ details.pieza .cuerpo{padding:0 14px 14px;display:grid;gap:12px}
 .etapa .kpi{font-size:.85rem;display:grid;gap:4px;border-left:1px dashed var(--linea);padding-left:14px}
 .etapa .kpi b{font:500 .68rem/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--suave)}
 @media (max-width:700px){.etapa{grid-template-columns:36px minmax(0,1fr)}.etapa .kpi{grid-column:2;border-left:0;padding-left:0;border-top:1px dashed var(--linea);padding-top:10px}}
+.ads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ads figure{margin:0;display:grid;gap:8px}
+.ads img{width:100%;border-radius:10px;border:1px solid var(--linea)}
+.ads figcaption{font-size:.85rem;color:var(--suave)}
+.ads figcaption b{display:block;color:var(--tinta)}
+@media (max-width:600px){.ads{grid-template-columns:1fr 1fr}}
 .puerta{border:2px solid var(--verde);border-radius:14px;padding:16px 18px;background:var(--verde-f)}
 
 /* Calculadora */
@@ -139,9 +145,13 @@ footer.pie{font-size:.85rem;color:var(--suave);border-top:1px solid var(--linea)
     <a class="logo" href="#resumen">clora</a>
     <a href="#resumen">Resumen</a>
     <a href="#producto">Producto</a>
+    <a href="#etiqueta">Etiqueta</a>
     <a href="#proveedores">Proveedores</a>
     <a href="#instagram">Instagram</a>
+    <a href="#anuncios">Anuncios</a>
     <a href="#embudo">Embudo</a>
+    <a href="#emails">Emails</a>
+    <a href="#influencers">Influencers</a>
     <a href="#numeros">Números</a>
     <a href="#legal">Legal</a>
     <a href="#calendario">30 días</a>
@@ -185,6 +195,15 @@ footer.pie{font-size:.85rem;color:var(--suave);border-top:1px solid var(--linea)
   </table></div>
   <p class="suave">Llenado diario ≈ 620 mg (≈ 310 mg por cápsula de tamaño 0, dentro de capacidad). El fabricante debe confirmar excipientes; si añade antiaglomerante, se declara en la lista de ingredientes de la web y la etiqueta.</p>
   <div class="nota"><b>Pedir al fabricante que valide:</b> idoneidad de la fórmula para notificarse en España, contenido de clorofila del extracto de alfalfa, metales pesados, vida útil (objetivo 24 meses), apto vegano y advertencias de alfalfa (personas con lupus o enfermedad autoinmune).</div>
+</section>
+
+<!-- ETIQUETA -->
+<section id="etiqueta">
+  <p class="eyebrow">Etiqueta</p>
+  <h2>El modelo de etiqueta para el fabricante y la notificación.</h2>
+  <p class="suave">Envolvente de 170 × 70 mm para bote de unos 150 ml. Lleva la denominación, los ingredientes en orden de peso, la cantidad por dosis con %VRN, el modo de empleo y las tres advertencias obligatorias del RD 1487/2009. También incluye conservación, consumo preferente, lote y responsable. El texto obligatorio tiene una altura de «x» de 1,30 mm; el mínimo legal es 1,2 mm.</p>
+  <img src="etiqueta.png" alt="Etiqueta envolvente de Clora en tres paneles" style="width:100%;border:1px solid var(--linea);border-radius:10px">
+  <div class="nota">El PDF a tamaño real está en el repositorio: <code>clora/etiqueta/etiqueta.pdf</code>. Antes de imprimir, completa lo marcado en amarillo (peso neto, responsable y RGSEAA), pide al fabricante que confirme alérgenos y trazas y añade 2 mm de sangrado si la imprenta lo pide. El código EAN-13 solo es necesario si vas a vender en tiendas o en Amazon (se compra en GS1 España).</div>
 </section>
 
 <!-- PROVEEDORES -->
@@ -349,6 +368,50 @@ Sin milagros, con cantidades
   </div>
 </section>
 
+<!-- ANUNCIOS -->
+<section id="anuncios">
+  <p class="eyebrow">Anuncios de Meta</p>
+  <h2>Tres ángulos para validar la lista verde.</h2>
+  <div class="ads">
+    <figure><img src="ig/anuncio-a-feed.jpg" alt="Anuncio A, transparencia"><figcaption><b>A · Transparencia</b>Cuatro ingredientes, cantidades a la vista</figcaption></figure>
+    <figure><img src="ig/anuncio-b-feed.jpg" alt="Anuncio B, ritual"><figcaption><b>B · Ritual</b>Diez segundos cada mañana</figcaption></figure>
+    <figure><img src="ig/anuncio-c-feed.jpg" alt="Anuncio C, oferta"><figcaption><b>C · Oferta</b>−15 % para la lista verde</figcaption></figure>
+  </div>
+  <p class="suave">Cada anuncio tiene versión 4:5 para feed y 9:16 para stories y reels, con las zonas seguras libres (<code>instagram/png/anuncio-*.jpg</code>).</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Nivel</th><th>Configuración</th></tr></thead>
+    <tbody>
+      <tr><td><b>Campaña</b></td><td>«CL · Validación · Lista verde». Objetivo: clientes potenciales. Conversión en sitio web, evento <code>Lead</code>. Presupuesto de campaña: 15–20 €/día durante 21 días.</td></tr>
+      <tr><td><b>Conjunto</b></td><td>España, de 22 a 50 años, público Advantage+ sin intereses. Sugerencias opcionales: rutina de mañana, cocina saludable, yoga. Ubicaciones Advantage+.</td></tr>
+      <tr><td><b>Anuncios</b></td><td>A, B y C con personalización por ubicación (4:5 y 9:16). Botón «Registrarte». UTM: <code>utm_source=meta&amp;utm_medium=paid&amp;utm_campaign=validacion&amp;utm_content=a</code> (b, c).</td></tr>
+      <tr><td><b>Seguimiento</b></td><td>Píxel de Meta y API de conversiones en la web real, activados solo tras el consentimiento del banner de cookies.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="caja" style="display:grid;gap:8px">
+    <h3>Reglas de corte</h3>
+    <ul style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:.93rem">
+      <li>Tras 1.000 impresiones, un anuncio con CTR de enlace inferior al 0,8 % se pausa.</li>
+      <li>Un anuncio que gasta 15 € sin ningún alta se pausa.</li>
+      <li>Si a los 50 € el coste por alta supera 3 €, cambia de ángulo; no subas presupuesto.</li>
+      <li>El ganador con coste por alta de 1,50 € o menos sube un 20 % el presupuesto cada 3 días.</li>
+    </ul>
+  </div>
+  <div class="piezas">
+    <details class="pieza"><summary><span class="pill">A</span><span>Textos del anuncio A<small>Transparencia</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="ad-a">Copiar</button><pre id="ad-a">Texto principal: Menta, perejil, clorofila de alfalfa y zinc. Cuatro ingredientes con su cantidad exacta en la etiqueta. Sin mezclas secretas.
+Título: Cuatro ingredientes. Ni uno más.
+Descripción: Lista verde: −15 % en el lanzamiento
+Botón: Registrarte</pre></div></details>
+    <details class="pieza"><summary><span class="pill">B</span><span>Textos del anuncio B<small>Ritual</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="ad-b">Copiar</button><pre id="ad-b">Texto principal: Dos cápsulas con el desayuno. Un bote, un mes. Menta, perejil, clorofila de alfalfa y zinc, que contribuye al mantenimiento de la piel en condiciones normales.
+Título: Tu ritual verde de diez segundos
+Descripción: Apúntate y llévate un 15 %
+Botón: Registrarte</pre></div></details>
+    <details class="pieza"><summary><span class="pill">C</span><span>Textos del anuncio C<small>Oferta</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="ad-c">Copiar</button><pre id="ad-c">Texto principal: Clora llega pronto. Apúntate a la lista verde y te enviamos un código del 15 % el día del lanzamiento. Sin compromiso y sin pago ahora.
+Título: −15 % para la lista verde
+Descripción: Cuatro ingredientes, dos cápsulas al día
+Botón: Registrarte</pre></div></details>
+  </div>
+</section>
+
 <!-- EMBUDO -->
 <section id="embudo">
   <p class="eyebrow">Embudo de venta</p>
@@ -371,6 +434,227 @@ Sin milagros, con cantidades
       <li><b>¿Qué significa %VRN?</b>: educativo de 20 s con el post del zinc.</li>
       <li><b>Llega el primer lote</b>: detrás de cámaras del pedido y del etiquetado.</li>
     </ul>
+  </div>
+</section>
+
+<!-- EMAILS -->
+<section id="emails">
+  <p class="eyebrow">Emails</p>
+  <h2>Doce correos escritos, listos para pegar.</h2>
+  <p class="suave">L = lista verde y lanzamiento · C = carrito abandonado · P = postcompra. Los envía Shopify Email o Klaviyo; el código LISTAVERDE15 debe caducar de verdad en la fecha que anuncias.</p>
+  <div class="piezas">
+    <details class="pieza"><summary><span class="pill">L1</span><span>Bienvenida a la lista verde<small>Inmediato tras el alta</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-l1">Copiar</button><pre id="em-l1">Asunto: Estás en la lista verde 🌿
+Preheader: Tu 15 % te espera el día del lanzamiento
+
+Hola:
+
+Gracias por apuntarte. Eres de las primeras personas en conocer Clora.
+
+Te cuento qué es: un complemento alimenticio con cuatro ingredientes (menta, perejil, clorofila de alfalfa y zinc) y la cantidad exacta de cada uno en la etiqueta. Dos cápsulas al día, un bote al mes.
+
+El día del lanzamiento te enviaremos un código del 15 % para tu primer pedido. Hasta entonces, un correo al mes como mucho.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill">L2</span><span>Por qué solo cuatro ingredientes<small>5 días después del alta</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-l2">Copiar</button><pre id="em-l2">Asunto: Lo que no lleva Clora
+Preheader: Ni mezclas secretas ni dosis escondidas
+
+Hola:
+
+Muchas cápsulas «verdes» agrupan sus ingredientes en una «mezcla propietaria» y no dicen cuánto lleva cada uno. Nosotros hemos hecho lo contrario:
+
+· Menta piperita: 200 mg
+· Perejil: 200 mg
+· Clorofila de alfalfa: 150 mg
+· Zinc: 10 mg (100 % del valor de referencia)
+
+El zinc contribuye al mantenimiento de la piel en condiciones normales. Y eso es todo lo que vamos a prometerte: lo que dice la ciencia, con la letra pequeña incluida.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill">L3</span><span>Aviso de apertura<small>2 días antes del lanzamiento</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-l3">Copiar</button><pre id="em-l3">Asunto: Clora abre el [día] a las [hora]
+Preheader: Tu código del 15 % llegará ese mismo día
+
+Hola:
+
+Ya tenemos fecha: el [día] a las [hora] abrimos la tienda.
+
+Como estás en la lista verde, ese día recibirás un código del 15 % válido hasta el [día] a las 23:59. Te recomendamos el pack de 2 botes (60 días, envío gratis).
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill">L4</span><span>Lanzamiento con código<small>Día del lanzamiento</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-l4">Copiar</button><pre id="em-l4">Asunto: Tu 15 % ya funciona
+Preheader: Código LISTAVERDE15, válido hasta el [día] a las 23:59
+
+Hola:
+
+Clora ya está disponible. Tu código: LISTAVERDE15
+
+· 1 bote (30 días): 27,90 € → 23,72 €
+· 2 botes (60 días): 47,90 € → 40,72 €, envío gratis
+· 3 botes (90 días): 62,90 € → 53,47 €, envío gratis
+
+[Botón: Elegir mi pack]
+
+Tienes 30 días de garantía de satisfacción: si no encaja en tu rutina, te devolvemos el primer bote.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill">L5</span><span>Último día del código<small>Fin del plazo, solo a quien no ha comprado</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-l5">Copiar</button><pre id="em-l5">Asunto: Tu 15 % termina esta noche
+Preheader: Hasta las 23:59 de hoy
+
+Hola:
+
+Solo un recordatorio: el código LISTAVERDE15 deja de funcionar hoy a las 23:59. Después, Clora seguirá disponible a su precio normal.
+
+[Botón: Usar mi código]
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">C1</span><span>Carrito abandonado<small>1 hora después</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-c1">Copiar</button><pre id="em-c1">Asunto: Tu pack sigue en el carrito
+Preheader: Lo tienes guardado tal cual lo dejaste
+
+Hola:
+
+Has dejado un pack de Clora en el carrito. Lo hemos guardado para que termines cuando quieras.
+
+[Botón: Volver a mi carrito]
+
+¿Alguna duda antes de comprar? Responde a este correo y te contestamos.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">C2</span><span>Carrito abandonado<small>24 horas después</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-c2">Copiar</button><pre id="em-c2">Asunto: ¿Te ayudamos a decidir?
+Preheader: Tres respuestas rápidas
+
+Hola:
+
+Las tres preguntas que más nos hacen antes de comprar:
+
+· ¿Cuánto dura un bote? 30 días, dos cápsulas al día.
+· ¿Es vegano? Sí, la cápsula es vegetal.
+· ¿Y si no me convence? Tienes 30 días de garantía de satisfacción.
+
+[Botón: Volver a mi carrito]
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">P1</span><span>Cómo tomar Clora<small>Con la confirmación del pedido</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-p1">Copiar</button><pre id="em-p1">Asunto: Así empieza tu ritual verde
+Preheader: Dos cápsulas, un vaso de agua, diez segundos
+
+Hola:
+
+Gracias por tu pedido. Para cuando llegue:
+
+1. Toma 2 cápsulas con el desayuno y un vaso de agua.
+2. Deja el bote a la vista, junto a la cafetera o el cepillo de dientes.
+3. Un bote dura 30 días exactos.
+
+Si tomas anticoagulantes, consulta antes con tu médico: el perejil y la alfalfa contienen vitamina K.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">P2</span><span>Seguimiento de envío<small>Al salir el paquete</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-p2">Copiar</button><pre id="em-p2">Asunto: Tu Clora va de camino
+Preheader: Número de seguimiento dentro
+
+Hola:
+
+Tu pedido ya ha salido. Puedes seguirlo aquí: [enlace de seguimiento]. En la península suele llegar en 24-72 horas.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">P3</span><span>Diez días de ritual<small>Día 10</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-p3">Copiar</button><pre id="em-p3">Asunto: Diez días de ritual verde
+Preheader: El truco para no olvidarlo
+
+Hola:
+
+Llevas unos diez días con Clora. Lo que mejor funciona para no saltarse ningún día: asociarlo a algo que ya haces cada mañana, como el primer café.
+
+¿Dónde has dejado tu bote? Responde con una foto y la compartimos (con tu permiso) en Instagram.
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">P4</span><span>Petición de reseña<small>Día 21</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-p4">Copiar</button><pre id="em-p4">Asunto: ¿Qué tal te va con Clora?
+Preheader: Tu opinión, buena o mala, nos ayuda
+
+Hola:
+
+Llevas tres semanas con tu ritual verde. ¿Nos cuentas qué te parece? Publicamos todas las reseñas de compradores verificados, positivas y negativas.
+
+[Botón: Dejar mi reseña]
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+    <details class="pieza"><summary><span class="pill lila">P5</span><span>Reposición<small>Día 24</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="em-p5">Copiar</button><pre id="em-p5">Asunto: Te quedan unos 6 días de cápsulas
+Preheader: Pide ahora y no cortes el ritual
+
+Hola:
+
+Si empezaste el día que te llegó, te quedan cápsulas para unos seis días. Pide ahora y te llega antes de que se acabe.
+
+· 2 botes (60 días): 47,90 €, envío gratis
+· 3 botes (90 días): 62,90 €, envío gratis
+
+[Botón: Reponer mi Clora]
+
+[Tu nombre], de Clora
+
+—
+Recibes este correo porque te apuntaste en [dominio]. Darte de baja: [enlace]. Complemento alimenticio: no sustituye a una dieta equilibrada y variada ni a un modo de vida sano.</pre></div></details>
+  </div>
+</section>
+
+<!-- INFLUENCERS -->
+<section id="influencers">
+  <p class="eyebrow">Influencers</p>
+  <h2>Veinte microcreadores, un bote cada uno.</h2>
+  <div class="dos">
+    <div class="caja"><h3>A quién escribir</h3><ul>
+      <li>Entre 5.000 y 30.000 seguidores, con la mayoría de la audiencia en España (pide captura de estadísticas).</li>
+      <li>Temas: rutina de mañana, orden y organización, cocina saludable, deporte amateur, vida tranquila.</li>
+      <li>Interacción de al menos un 2 %, con comentarios reales.</li>
+      <li>Descarta cuentas de «detox», adelgazamiento o fotos de antes y después.</li>
+    </ul></div>
+    <div class="caja"><h3>Qué pueden decir</h3><ul>
+      <li><b>Sí:</b> ingredientes y cantidades, cómo lo toman, su ritual de mañana, el claim del zinc tal cual.</li>
+      <li><b>No:</b> efectos que notan, olor, sudor, aliento, «detox» o «depura».</li>
+      <li>Siempre «#publi», «producto regalado» o la etiqueta de colaboración de Instagram (Código de conducta sobre influencers de Autocontrol).</li>
+    </ul></div>
+  </div>
+  <div class="copiable">
+    <button class="copiar" type="button" data-copiar="dm">Copiar mensaje</button>
+<pre id="dm">Hola, [nombre]:
+
+Soy [tu nombre] y estoy lanzando Clora, un complemento con solo cuatro ingredientes (menta, perejil, clorofila de alfalfa y zinc) y las cantidades a la vista. Me encaja mucho cómo cuentas tus mañanas y me encantaría enviarte un bote, sin compromiso.
+
+Si después te apetece compartirlo, te pediría solo dos cosas: indicarlo como «producto regalado» o #publi, y no atribuirle efectos (por ley solo podemos hablar de lo que dice la etiqueta). Te daría además un código del 15 % para tu comunidad.
+
+¿Te lo envío? Solo necesito una dirección de entrega.
+
+Gracias,
+[tu nombre] · Clora</pre>
   </div>
 </section>
 
@@ -441,7 +725,7 @@ Sin milagros, con cantidades
     <li><input type="checkbox" id="l4"><label for="l4">Notificación de puesta en el mercado (RD 1487/2009)<small>Con el modelo de etiqueta, antes o en el momento de empezar a vender. No es una autorización: la responsabilidad sigue siendo tuya.</small></label></li>
     <li><input type="checkbox" id="l5"><label for="l5">Etiqueta conforme (Reg. UE 1169/2011 y RD 1487/2009)<small>«Complemento alimenticio», dosis, las tres advertencias obligatorias, %VRN, lote, consumo preferente y responsable.</small></label></li>
     <li><input type="checkbox" id="l6"><label for="l6">Registro de Productores de Producto, sección envases, y adhesión a un SCRAP<small>RD 1055/2022: aplica a quien pone envases domésticos en el mercado.</small></label></li>
-    <li><input type="checkbox" id="l7"><label for="l7">Web: aviso legal, privacidad, cookies, condiciones de venta y desistimiento<small>LSSI-CE, RGPD/LOPDGDD, TRLGDCU. Consentimiento expreso para emails comerciales. El enlace a la plataforma ODR ya no es obligatorio (cerrada el 20/07/2025).</small></label></li>
+    <li><input type="checkbox" id="l7"><label for="l7">Web: aviso legal, privacidad, cookies, condiciones de venta y desistimiento<small>LSSI-CE, RGPD/LOPDGDD, TRLGDCU. Consentimiento expreso para emails comerciales. El enlace a la plataforma ODR ya no es obligatorio (cerrada el 20/07/2025). <b>Ya redactadas</b> en la tienda (pie de página → Legal), con tus datos pendientes en amarillo.</small></label></li>
     <li><input type="checkbox" id="l8"><label for="l8">Seguro de responsabilidad civil de producto</label></li>
     <li><input type="checkbox" id="l9"><label for="l9">Influencers: #publi visible en cada pieza pagada o regalada<small>Código de conducta sobre el uso de influencers en la publicidad (Autocontrol).</small></label></li>
   </ul>
@@ -464,6 +748,7 @@ Sin milagros, con cantidades
 <section id="pendiente">
   <p class="eyebrow">Lo que falta</p>
   <h2>Lo que solo puedes hacer tú.</h2>
+  <p class="suave">Ya hecho y en el repositorio: tienda con páginas legales y página de gracias, etiqueta, 9 posts, story, perfil y destacados, 6 anuncios con textos, 12 emails y el kit para influencers.</p>
   <div class="tabla"><table>
     <thead><tr><th>Tarea</th><th>Por qué no la he hecho</th><th class="num">Tiempo</th></tr></thead>
     <tbody>
@@ -471,6 +756,8 @@ Sin milagros, con cantidades
       <tr><td>Comprar el dominio</td><td>Requiere pago y titular.</td><td class="num">10 min</td></tr>
       <tr><td>Enviar las solicitudes de presupuesto</td><td>Van con tu nombre y empresa.</td><td class="num">20 min</td></tr>
       <tr><td>Conectar pagos (Stripe o Shopify)</td><td>Requiere alta fiscal y cuenta bancaria.</td><td class="num">1 h</td></tr>
+      <tr><td>Rellenar los datos en amarillo de las páginas legales y la etiqueta</td><td>Son tus datos fiscales y de registro.</td><td class="num">15 min</td></tr>
+      <tr><td>Crear la cuenta publicitaria de Meta y el píxel</td><td>Requiere tu Business Manager y un medio de pago.</td><td class="num">30 min</td></tr>
       <tr><td>Conectar el formulario de la lista</td><td>Pega la URL de tu herramienta de email en <code>formEndpoint</code> de la landing.</td><td class="num">10 min</td></tr>
     </tbody>
   </table></div>
@@ -503,9 +790,10 @@ PIEZAS.slice().reverse().forEach(([id, titulo, texto]) => {
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-copiar]'); if (!b) return;
   const pre = document.getElementById(b.dataset.copiar);
+  b.dataset.txt = b.dataset.txt || b.textContent;
   try { await navigator.clipboard.writeText(pre.textContent); b.textContent = 'Copiado'; }
   catch { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Seleccionado'; }
-  setTimeout(() => { b.textContent = b.dataset.copiar === 'bio' ? 'Copiar bio' : 'Copiar'; }, 1600);
+  setTimeout(() => { b.textContent = b.dataset.txt; }, 1600);
 });
 
 /* Calculadora de margen por pedido */

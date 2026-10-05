@@ -12,4 +12,5 @@ mkdir -p dist
   grep -vE '^<(title|meta|link)' index.html
   printf '\n</body>\n</html>\n'
 } > dist/index.html
-echo "Generado web/dist/index.html"
+cp legal.html gracias.html dist/
+echo "Generado web/dist/ (index, legal y gracias)"

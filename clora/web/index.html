@@ -1,0 +1,627 @@
+<title>Clora</title>
+<meta name="description" content="Clora: menta, perejil y clorofila natural de alfalfa con zinc. Cuatro ingredientes, dos cápsulas al día.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: hero partido (texto | bote sobre disco lila), bandas papel/menta alternas y una banda clorofila para los packs */
+:root{
+  --clorofila:#173F2A; --hoja:#2F6B45; --menta:#E3F0E6; --papel:#F8FAF6;
+  --flor:#B9A9EA; --flor-osc:#56459A; --tinta:#13261B; --gris:#53625A; --linea:#D3DFD6; --blanco:#FFFFFF;
+  --f-display:'Gloock', Georgia, 'Times New Roman', serif;
+  --f-body:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --ancho:1120px; --r:14px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{background:var(--papel);color:var(--tinta);font:400 17px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--flor-osc);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--ancho);margin-inline:auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.6rem,6.4vw,4.6rem);letter-spacing:-.01em}
+h2{font-size:clamp(2rem,4.4vw,3.1rem)}
+h3{font-size:1.45rem}
+p{margin:0}
+.eyebrow{font:500 .74rem/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--hoja)}
+.lead{font-size:1.15rem;color:var(--gris);max-width:34rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;font:600 1rem/1 var(--f-body);padding:1rem 1.5rem;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:transform .15s ease,background .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn-pri{background:var(--clorofila);color:var(--papel)}
+.btn-pri:hover{background:var(--hoja)}
+.btn-sec{background:transparent;color:var(--clorofila);box-shadow:inset 0 0 0 1.5px var(--clorofila)}
+.btn-flor{background:var(--flor);color:var(--tinta)}
+.btn-flor:hover{background:#CABEF0}
+
+/* barra anuncio + cabecera */
+.anuncio{background:var(--clorofila);color:var(--papel);text-align:center;font:500 .82rem/1.4 var(--f-body);padding:.55rem 16px}
+.anuncio b{color:var(--flor);font-weight:600}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--papel) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--linea)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.marca{display:flex;align-items:center;gap:.5rem;text-decoration:none;font:400 1.7rem/1 var(--f-display);color:var(--clorofila)}
+.marca svg{width:28px;height:28px}
+nav.menu{display:flex;gap:1.6rem;font-weight:500;font-size:.95rem}
+nav.menu a{text-decoration:none;color:var(--gris)}
+nav.menu a:hover{color:var(--clorofila)}
+.top .btn{padding:.7rem 1.1rem;font-size:.92rem}
+@media (max-width:760px){nav.menu{display:none}}
+
+/* hero */
+.hero{padding-block:clamp(2.5rem,6vw,5rem) clamp(2rem,5vw,4rem)}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(1.5rem,4vw,4rem);align-items:center}
+.hero-txt{display:grid;gap:1.4rem;min-width:0}
+.hero h1 span{color:var(--hoja)}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem}
+.hero-datos{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;font-size:.9rem;color:var(--gris);padding-top:.4rem}
+.hero-datos b{color:var(--tinta);font-weight:600;font-variant-numeric:tabular-nums}
+.escena{position:relative;aspect-ratio:1/1.02;max-width:520px;width:100%;justify-self:center}
+.escena .disco{position:absolute;inset:6% 4% 8% 4%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#D6CCF5 0,var(--flor) 62%,#A493E0 100%)}
+.escena .bote{position:absolute;left:50%;bottom:4%;width:56%;transform:translateX(-50%);filter:drop-shadow(0 18px 24px rgba(19,38,27,.18))}
+.escena .h{position:absolute;width:34%}
+.escena .h1{left:-2%;top:56%;transform:rotate(-18deg)}
+.escena .h2{right:-4%;top:14%;transform:rotate(152deg) scale(.85)}
+.escena .h3{right:2%;bottom:6%;width:26%;transform:rotate(200deg)}
+.escena .c{position:absolute;width:15%}
+.escena .c1{left:12%;bottom:6%;transform:rotate(-24deg)}
+.escena .c2{left:24%;bottom:2%;transform:rotate(12deg)}
+.escena .c3{right:16%;top:6%;transform:rotate(40deg);width:12%}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr}.escena{max-width:400px}}
+
+/* sello */
+.sellos{border-block:1px solid var(--linea);background:var(--blanco)}
+.sellos ul{list-style:none;margin:0;padding-block:1.1rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.sellos li{display:flex;align-items:center;gap:.6rem;font-size:.92rem;font-weight:500;min-width:0}
+.sellos svg{flex:none;width:22px;height:22px;color:var(--hoja)}
+@media (max-width:760px){.sellos ul{grid-template-columns:1fr 1fr}}
+
+section{padding-block:clamp(3.5rem,8vw,6.5rem)}
+.cab{display:grid;gap:.9rem;max-width:44rem;margin-bottom:clamp(2rem,4vw,3rem)}
+
+/* manifiesto */
+.manif{background:var(--menta)}
+.manif .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.manif blockquote{margin:0;font:400 clamp(1.7rem,3.4vw,2.5rem)/1.2 var(--f-display);color:var(--clorofila);text-wrap:balance}
+.lista-ok{display:grid;gap:.2rem;margin:0;padding:0;list-style:none}
+.lista-ok li{display:grid;grid-template-columns:28px 1fr;gap:.7rem;padding:.85rem 0;border-bottom:1px solid #C8DACD}
+.lista-ok li:last-child{border-bottom:0}
+.lista-ok .si{color:var(--hoja)} .lista-ok .no{color:#9A4B4B}
+.lista-ok b{display:block;font-weight:600}
+.lista-ok span{color:var(--gris);font-size:.95rem}
+@media (max-width:860px){.manif .wrap{grid-template-columns:1fr}}
+
+/* ingredientes */
+.ingr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--linea);border:1px solid var(--linea);border-radius:var(--r);overflow:hidden}
+.ingr{background:var(--blanco);padding:1.6rem 1.4rem 1.5rem;display:grid;grid-template-rows:auto auto auto 1fr auto;gap:.55rem;min-width:0}
+.ingr svg{width:56px;height:56px;color:var(--hoja);margin-bottom:.4rem}
+.ingr .lat{font:400 .8rem/1.3 var(--f-mono);color:var(--flor-osc)}
+.ingr p{color:var(--gris);font-size:.95rem}
+.ingr .dosis{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--linea);padding-top:.8rem;margin-top:.4rem;font:500 .82rem/1 var(--f-mono);color:var(--gris)}
+.ingr .dosis b{font:400 1.5rem/1 var(--f-display);color:var(--clorofila);font-variant-numeric:tabular-nums}
+@media (max-width:980px){.ingr-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.ingr-grid{grid-template-columns:1fr}}
+.lista-ing{margin-top:1.6rem;font-size:.95rem;color:var(--gris);max-width:62rem}
+.lista-ing b{color:var(--tinta)}
+
+/* ficha */
+.ficha-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
+.ficha{border:2px solid var(--tinta);background:var(--blanco);padding:1.2rem 1.3rem;font-size:.95rem;min-width:0}
+.ficha h3{font-family:var(--f-body);font-weight:700;font-size:1.3rem;border-bottom:8px solid var(--tinta);padding-bottom:.4rem;margin-bottom:.3rem}
+.ficha table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.ficha th,.ficha td{text-align:left;padding:.55rem 0;border-bottom:1px solid var(--tinta);vertical-align:top}
+.ficha th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.ficha td:nth-child(n+2),.ficha th:nth-child(n+2){text-align:right;white-space:nowrap;padding-left:.8rem}
+.ficha .nota{font-size:.78rem;color:var(--gris);padding-top:.6rem}
+.claims{display:grid;gap:1rem}
+.claim{background:var(--menta);border-radius:var(--r);padding:1.2rem 1.3rem;display:grid;grid-template-columns:48px 1fr;gap:1rem;align-items:center}
+.claim .zn{width:48px;height:48px;border-radius:10px;background:var(--clorofila);color:var(--papel);display:grid;place-items:center;font:500 .95rem/1 var(--f-mono);position:relative}
+.claim .zn small{position:absolute;top:4px;left:5px;font-size:.55rem;opacity:.7}
+@media (max-width:860px){.ficha-wrap{grid-template-columns:1fr}}
+
+/* ritual */
+.ritual{background:var(--blanco);border-block:1px solid var(--linea)}
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,3vw,2rem);counter-reset:paso}
+.paso{display:grid;gap:.7rem;align-content:start}
+.paso .num{font:400 3.2rem/1 var(--f-display);color:var(--flor)}
+.paso p{color:var(--gris)}
+@media (max-width:760px){.pasos{grid-template-columns:1fr}}
+
+/* packs */
+.packs{background:var(--clorofila);color:var(--papel)}
+.packs .eyebrow{color:var(--flor)}
+.packs .lead{color:#C9D8CE}
+.pack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;align-items:stretch}
+.pack{background:#1F4C34;border-radius:18px;padding:1.6rem 1.4rem;display:grid;grid-template-rows:auto auto auto 1fr auto;gap:.9rem;position:relative;min-width:0}
+.pack.dest{background:var(--papel);color:var(--tinta);box-shadow:0 0 0 3px var(--flor)}
+.pack .etq{position:absolute;top:-12px;left:1.4rem;background:var(--flor);color:var(--tinta);font:500 .7rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;padding:.45rem .65rem;border-radius:999px}
+.pack .botes{height:120px;display:flex;align-items:flex-end;justify-content:center}
+.pack .botes svg{width:72px;height:auto;margin-inline:-14px}
+.pack .botes svg:nth-child(2){width:80px;z-index:1}
+.pack h3{font-size:1.6rem}
+.pack .dias{font:500 .8rem/1 var(--f-mono);letter-spacing:.08em;opacity:.75}
+.precio{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.precio b{font:400 2.4rem/1 var(--f-display)}
+.precio s{opacity:.55}
+.pack ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem;font-size:.93rem}
+.pack li::before{content:"";display:inline-block;width:.45em;height:.45em;border-radius:50%;background:var(--flor);margin-right:.6em;vertical-align:.12em}
+.pack.dest li::before{background:var(--hoja)}
+.pack .btn{width:100%}
+.pack:not(.dest) .btn{background:var(--papel);color:var(--clorofila)}
+.garantias{display:flex;flex-wrap:wrap;gap:.6rem 2rem;justify-content:center;margin-top:2rem;font-size:.9rem;color:#C9D8CE}
+@media (max-width:900px){.pack-grid{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
+
+/* garantía */
+.garantia .wrap{display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,4vw,3rem);align-items:center}
+.sello-30{width:150px;height:150px}
+.garantia small{display:block;color:var(--gris);font-size:.85rem;margin-top:.8rem;max-width:40rem}
+@media (max-width:640px){.garantia .wrap{grid-template-columns:1fr}.sello-30{width:120px;height:120px}}
+
+/* faq */
+.faq{background:var(--menta)}
+.faq .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2rem,5vw,4rem);align-items:start}
+details{border-bottom:1px solid #C3D6C8}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:1rem;padding:1.1rem 0;font-weight:600;font-size:1.05rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 1.5rem/1 var(--f-display);color:var(--hoja);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 0 1.2rem;color:var(--gris);max-width:40rem}
+@media (max-width:860px){.faq .wrap{grid-template-columns:1fr}}
+
+/* lista */
+.lista .caja{background:var(--clorofila);color:var(--papel);border-radius:22px;padding:clamp(1.8rem,5vw,3.2rem);display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
+.lista .eyebrow{color:var(--flor)}
+.lista p{color:#C9D8CE;margin-top:.8rem}
+@media (max-width:860px){.lista .caja{grid-template-columns:1fr}}
+
+form.f{display:grid;gap:.8rem}
+.f label.t{font-size:.85rem;font-weight:600}
+.f input[type=email],.f select{width:100%;font:500 1rem/1.2 var(--f-body);padding:.95rem 1rem;border-radius:12px;border:1.5px solid var(--linea);background:var(--blanco);color:var(--tinta)}
+.f .fila{display:flex;gap:.6rem;flex-wrap:wrap}
+.f .fila input{flex:1 1 220px}
+.f .ok{display:flex;gap:.6rem;align-items:flex-start;font-size:.82rem;line-height:1.4}
+.f .ok input{margin-top:.2rem;accent-color:var(--hoja)}
+.f .msg{font-size:.9rem;border-radius:10px;padding:.8rem 1rem;background:var(--menta);color:var(--tinta)}
+.lista .f .ok{color:#C9D8CE}
+.lista .f .ok a{color:var(--papel)}
+
+/* pie */
+footer{background:var(--tinta);color:#B8C7BD;padding-block:3.5rem 6rem;font-size:.88rem}
+footer .wrap{display:grid;gap:2rem}
+footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2rem}
+footer h4{font:500 .72rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--flor);margin:0 0 .9rem}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}
+footer a{text-decoration:none}
+footer a:hover{color:var(--papel)}
+.avisos{border-top:1px solid #2C4235;padding-top:1.4rem;display:grid;gap:.5rem;font-size:.8rem;color:#93A69A}
+@media (max-width:760px){footer .cols{grid-template-columns:1fr}}
+
+/* barra fija móvil */
+.barra{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--papel);border-top:1px solid var(--linea);padding:.7rem 16px calc(.7rem + env(safe-area-inset-bottom,0px));display:none;align-items:center;justify-content:space-between;gap:1rem;transform:translateY(110%);transition:transform .25s ease}
+.barra.vis{transform:none}
+.barra p{font-size:.85rem;line-height:1.3;min-width:0}
+.barra b{font-family:var(--f-display);font-weight:400;font-size:1.15rem;color:var(--clorofila)}
+.barra .btn{padding:.8rem 1.1rem;font-size:.9rem;flex:none}
+@media (max-width:760px){.barra{display:flex}}
+
+/* diálogo */
+dialog{border:0;border-radius:20px;padding:0;width:min(460px,calc(100vw - 32px));background:var(--papel);color:var(--tinta);box-shadow:0 30px 80px rgba(10,30,20,.35)}
+dialog::backdrop{background:rgba(13,30,20,.55)}
+.dlg{padding:1.6rem;display:grid;gap:1rem}
+.dlg-cab{display:flex;justify-content:space-between;align-items:start;gap:1rem}
+.cerrar{background:none;border:0;font:400 1.6rem/1 var(--f-display);cursor:pointer;color:var(--gris);padding:.2rem .4rem}
+.resumen{display:flex;justify-content:space-between;background:var(--menta);border-radius:12px;padding:.8rem 1rem;font-variant-numeric:tabular-nums;font-weight:600}
+</style>
+
+<!-- Sprites -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="cb-body" x1="0" x2="1"><stop offset="0" stop-color="#D9E3DC"/><stop offset=".16" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#F3F7F3"/><stop offset="1" stop-color="#C3D1C7"/></linearGradient>
+    <linearGradient id="cb-cap" x1="0" x2="1"><stop offset="0" stop-color="#0D2A1B"/><stop offset=".28" stop-color="#2A6142"/><stop offset=".7" stop-color="#173F2A"/><stop offset="1" stop-color="#0A2015"/></linearGradient>
+    <linearGradient id="cb-label" x1="0" x2="1"><stop offset="0" stop-color="#10311F"/><stop offset=".22" stop-color="#1E4E33"/><stop offset=".78" stop-color="#173F2A"/><stop offset="1" stop-color="#0C2618"/></linearGradient>
+    <radialGradient id="cb-shadow"><stop offset="0" stop-color="#0B1F14" stop-opacity=".32"/><stop offset="1" stop-color="#0B1F14" stop-opacity="0"/></radialGradient>
+    <linearGradient id="hoja-g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#4E9A62"/><stop offset="1" stop-color="#2F6B45"/></linearGradient>
+  </defs>
+  <symbol id="bote" viewBox="0 0 320 440">
+    <ellipse cx="160" cy="420" rx="128" ry="15" fill="url(#cb-shadow)"/>
+    <rect x="104" y="64" width="112" height="30" rx="6" fill="#E4EBE6"/>
+    <path d="M70 116 Q70 92 94 90 L226 90 Q250 92 250 116 L250 394 Q250 414 228 416 L92 416 Q70 414 70 394 Z" fill="url(#cb-body)"/>
+    <rect x="94" y="16" width="132" height="58" rx="10" fill="url(#cb-cap)"/>
+    <path d="M108 22 V68 M122 22 V68 M136 22 V68 M150 22 V68 M164 22 V68 M178 22 V68 M192 22 V68 M206 22 V68" stroke="#0A2015" stroke-opacity=".45" stroke-width="2"/>
+    <rect x="70" y="146" width="180" height="222" fill="url(#cb-label)"/>
+    <g transform="translate(160 186)">
+      <circle r="17" fill="none" stroke="#B9A9EA" stroke-width="1.6"/>
+      <path d="M-10 6 C-6 -6 4 -12 12 -12 C12 -2 6 8 -8 9 Z" fill="#E3F0E6"/>
+      <path d="M-9 7 L9 -9" stroke="#173F2A" stroke-width="1.2"/>
+    </g>
+    <text x="160" y="246" text-anchor="middle" font-family="Gloock, Georgia, serif" font-size="50" fill="#F8FAF6">clora</text>
+    <text x="160" y="270" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="7.6" letter-spacing=".8" fill="#B9A9EA">MENTA · PEREJIL · CLOROFILA</text>
+    <text x="160" y="284" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="7.6" letter-spacing=".8" fill="#B9A9EA">+ ZINC</text>
+    <path d="M96 300 H224" stroke="#F8FAF6" stroke-opacity=".35"/>
+    <text x="160" y="320" text-anchor="middle" font-family="Figtree, sans-serif" font-size="8.4" font-weight="600" letter-spacing=".9" fill="#F8FAF6">COMPLEMENTO ALIMENTICIO</text>
+    <text x="160" y="336" text-anchor="middle" font-family="Figtree, sans-serif" font-size="9" fill="#F8FAF6" fill-opacity=".8">60 cápsulas vegetales · 30 días</text>
+    <rect x="75" y="104" width="6" height="292" rx="3" fill="#FFFFFF" opacity=".75"/>
+  </symbol>
+  <symbol id="hoja" viewBox="0 -40 130 80">
+    <path d="M2 0 C24 -34 76 -38 126 0 C76 38 24 34 2 0Z" fill="url(#hoja-g)"/>
+    <path d="M4 0 L120 0 M30 0 L46 -16 M52 0 L70 -18 M76 0 L92 -14 M30 0 L46 16 M52 0 L70 18 M76 0 L92 14" stroke="#E3F0E6" stroke-opacity=".55" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="capsula" viewBox="0 0 80 32">
+    <rect x="1" y="1" width="78" height="30" rx="15" fill="#3E8257"/>
+    <path d="M16 1 H40 V31 H16 A15 15 0 0 1 16 1Z" fill="#2F6B45"/>
+    <rect x="10" y="6" width="56" height="5" rx="2.5" fill="#FFFFFF" opacity=".35"/>
+  </symbol>
+  <symbol id="logo" viewBox="-20 -20 40 40">
+    <circle r="17" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <path d="M-10 6 C-6 -6 4 -12 12 -12 C12 -2 6 8 -8 9 Z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ico-ok" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ico-no" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="anuncio" id="anuncio"><b>Próximo lanzamiento</b> · Únete a la lista y llévate un 15 % en tu primer pedido</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="marca" href="#inicio" aria-label="Clora, inicio"><svg aria-hidden="true"><use href="#logo"/></svg>clora</a>
+    <nav class="menu" aria-label="Secciones">
+      <a href="#formula">Fórmula</a>
+      <a href="#ritual">Cómo se toma</a>
+      <a href="#packs">Packs</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <a class="btn btn-pri" href="#packs">Elegir pack</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero" aria-labelledby="h-hero">
+    <div class="wrap">
+      <div class="hero-txt">
+        <p class="eyebrow">Complemento alimenticio · 60 cápsulas vegetales</p>
+        <h1 id="h-hero">Tu ritual <span>verde</span> de cada mañana.</h1>
+        <p class="lead">Menta, perejil y clorofila natural de alfalfa. Con zinc, que contribuye al mantenimiento de la piel en condiciones normales. Cuatro ingredientes, dos cápsulas al día.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-pri" href="#packs">Elegir mi pack</a>
+          <a class="btn btn-sec" href="#formula">Ver la fórmula</a>
+        </div>
+        <div class="hero-datos">
+          <span>Desde <b>20,97 €</b> / bote</span>
+          <span><b>4</b> ingredientes</span>
+          <span>Cantidades a la vista</span>
+        </div>
+      </div>
+      <div class="escena" aria-hidden="true">
+        <div class="disco"></div>
+        <svg class="h h2" viewBox="0 -40 130 80"><use href="#hoja"/></svg>
+        <svg class="c c3" viewBox="0 0 80 32"><use href="#capsula"/></svg>
+        <svg class="bote" viewBox="0 0 320 440"><use href="#bote"/></svg>
+        <svg class="h h1" viewBox="0 -40 130 80"><use href="#hoja"/></svg>
+        <svg class="h h3" viewBox="0 -40 130 80"><use href="#hoja"/></svg>
+        <svg class="c c1" viewBox="0 0 80 32"><use href="#capsula"/></svg>
+        <svg class="c c2" viewBox="0 0 80 32"><use href="#capsula"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="sellos">
+    <ul class="wrap">
+      <li><svg aria-hidden="true"><use href="#ico-ok"/></svg>Cápsula vegetal</li>
+      <li><svg aria-hidden="true"><use href="#ico-ok"/></svg>Fabricado en la UE</li>
+      <li><svg aria-hidden="true"><use href="#ico-ok"/></svg>Envío 24-72 h</li>
+      <li><svg aria-hidden="true"><use href="#ico-ok"/></svg>Garantía 30 días</li>
+    </ul>
+  </div>
+
+  <section class="manif" aria-label="Por qué Clora">
+    <div class="wrap">
+      <div class="cab" style="margin:0">
+        <p class="eyebrow">Por qué Clora</p>
+        <blockquote>No te prometemos milagros. Te contamos exactamente lo que lleva cada cápsula.</blockquote>
+      </div>
+      <ul class="lista-ok">
+        <li><svg class="si" width="24" height="24" aria-hidden="true"><use href="#ico-ok"/></svg><div><b>Cuatro ingredientes con nombre y cantidad</b><span>Sabes cuántos miligramos de cada uno tomas al día.</span></div></li>
+        <li><svg class="si" width="24" height="24" aria-hidden="true"><use href="#ico-ok"/></svg><div><b>Plantas que ya conoces</b><span>Menta y perejil de la cocina de siempre, y clorofila de la hoja de alfalfa.</span></div></li>
+        <li><svg class="si" width="24" height="24" aria-hidden="true"><use href="#ico-ok"/></svg><div><b>Un gesto de diez segundos</b><span>Dos cápsulas con el desayuno. Un bote, un mes.</span></div></li>
+        <li><svg class="no" width="24" height="24" aria-hidden="true"><use href="#ico-no"/></svg><div><b>Sin mezclas «secretas»</b><span>Nada de fórmulas propietarias que esconden las dosis.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="formula" aria-labelledby="h-formula">
+    <div class="wrap">
+      <div class="cab">
+        <p class="eyebrow">La fórmula</p>
+        <h2 id="h-formula">Cuatro ingredientes. Ni uno más.</h2>
+        <p class="lead">Cantidades por dosis diaria de dos cápsulas.</p>
+      </div>
+      <div class="ingr-grid">
+        <article class="ingr">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M10 44 C14 24 30 10 48 8 C48 28 34 44 12 46 Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 45 L42 14 M22 34 L22 24 M22 34 L32 34 M30 26 L30 17 M30 26 L39 26" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          <h3>Menta piperita</h3>
+          <p class="lat">Mentha × piperita L.</p>
+          <p>Hoja en extracto seco. La aromática que asociamos a lo fresco desde hace siglos.</p>
+          <div class="dosis">EXTRACTO DE HOJA <b>200 mg</b></div>
+        </article>
+        <article class="ingr">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M28 52 V28 M28 34 L16 22 M28 34 L40 22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="28" cy="18" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="13" cy="18" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="43" cy="18" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <h3>Perejil</h3>
+          <p class="lat">Petroselinum crispum (Mill.) Fuss</p>
+          <p>Hoja en polvo. La hierba verde por excelencia de la cocina mediterránea.</p>
+          <div class="dosis">HOJA EN POLVO <b>200 mg</b></div>
+        </article>
+        <article class="ingr">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M28 52 V30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><ellipse cx="28" cy="16" rx="7" ry="11" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="15" cy="30" rx="7" ry="11" transform="rotate(-60 15 30)" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="41" cy="30" rx="7" ry="11" transform="rotate(60 41 30)" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <h3>Clorofila de alfalfa</h3>
+          <p class="lat">Medicago sativa L.</p>
+          <p>Extracto de hoja. La alfalfa es trifoliada, rica en el pigmento que hace verdes a las plantas.</p>
+          <div class="dosis">EXTRACTO DE HOJA <b>150 mg</b></div>
+        </article>
+        <article class="ingr">
+          <svg viewBox="0 0 56 56" aria-hidden="true"><path d="M28 5 L48 16.5 V39.5 L28 51 L8 39.5 V16.5 Z" fill="none" stroke="currentColor" stroke-width="2"/><text x="28" y="34" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="14" fill="currentColor">Zn</text><text x="15" y="22" font-family="'IBM Plex Mono', monospace" font-size="7" fill="currentColor">30</text></svg>
+          <h3>Zinc</h3>
+          <p class="lat">Gluconato de zinc</p>
+          <p>Contribuye al mantenimiento de la piel en condiciones normales.</p>
+          <div class="dosis">100 % VRN <b>10 mg</b></div>
+        </article>
+      </div>
+      <p class="lista-ing"><b>Ingredientes:</b> extracto seco de hoja de menta (<i>Mentha × piperita</i> L.), hoja de perejil en polvo (<i>Petroselinum crispum</i>), cápsula vegetal (hidroxipropilmetilcelulosa), extracto de hoja de alfalfa (<i>Medicago sativa</i> L.), gluconato de zinc.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-ficha" style="padding-top:0">
+    <div class="wrap ficha-wrap">
+      <div class="ficha">
+        <h3 id="h-ficha">Información por dosis diaria</h3>
+        <table>
+          <thead><tr><th>2 cápsulas</th><th>Cantidad</th><th>% VRN*</th></tr></thead>
+          <tbody>
+            <tr><td>Extracto de hoja de menta</td><td>200 mg</td><td>—</td></tr>
+            <tr><td>Hoja de perejil</td><td>200 mg</td><td>—</td></tr>
+            <tr><td>Extracto de hoja de alfalfa</td><td>150 mg</td><td>—</td></tr>
+            <tr><td>Zinc</td><td>10 mg</td><td>100 %</td></tr>
+          </tbody>
+        </table>
+        <p class="nota">*VRN: valores de referencia de nutrientes. Bote de 60 cápsulas (30 dosis).</p>
+      </div>
+      <div class="claims">
+        <div class="cab" style="margin:0">
+          <p class="eyebrow">Lo que hace el zinc</p>
+          <h2>Ciencia con letra pequeña incluida.</h2>
+        </div>
+        <div class="claim"><span class="zn"><small>30</small>Zn</span><p>El zinc contribuye al <b>mantenimiento de la piel</b> en condiciones normales.</p></div>
+        <div class="claim"><span class="zn"><small>30</small>Zn</span><p>El zinc contribuye a la <b>protección de las células frente al daño oxidativo</b>.</p></div>
+        <div class="claim"><span class="zn"><small>30</small>Zn</span><p>El zinc contribuye al <b>funcionamiento normal del sistema inmunitario</b>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ritual" id="ritual" aria-labelledby="h-ritual">
+    <div class="wrap">
+      <div class="cab">
+        <p class="eyebrow">Cómo se toma</p>
+        <h2 id="h-ritual">Diez segundos al día.</h2>
+      </div>
+      <div class="pasos">
+        <div class="paso"><span class="num">1</span><h3>Con el desayuno</h3><p>Toma 2 cápsulas con un vaso de agua. Se tragan enteras.</p></div>
+        <div class="paso"><span class="num">2</span><h3>Un bote, un mes</h3><p>60 cápsulas cubren 30 días exactos. Sin cuentas raras.</p></div>
+        <div class="paso"><span class="num">3</span><h3>Déjalo a la vista</h3><p>Junto a la cafetera o el cepillo de dientes. La constancia es el ritual.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="packs" id="packs" aria-labelledby="h-packs">
+    <div class="wrap">
+      <div class="cab">
+        <p class="eyebrow">Elige tu pack</p>
+        <h2 id="h-packs">Cuantos más días, menos pagas por bote.</h2>
+        <p class="lead" id="packs-lead">Apúntate ahora y te enviamos un código del 15 % el día del lanzamiento.</p>
+      </div>
+      <div class="pack-grid">
+        <article class="pack">
+          <div class="botes" aria-hidden="true"><svg viewBox="0 0 320 440"><use href="#bote"/></svg></div>
+          <div><p class="dias">30 DÍAS</p><h3>1 bote</h3></div>
+          <p class="precio"><b>27,90 €</b></p>
+          <ul><li>60 cápsulas</li><li>Envío 3,95 €</li></ul>
+          <a class="btn" data-pack="1" href="#packs">Reservar</a>
+        </article>
+        <article class="pack dest">
+          <span class="etq">Recomendado</span>
+          <div class="botes" aria-hidden="true"><svg viewBox="0 0 320 440"><use href="#bote"/></svg><svg viewBox="0 0 320 440"><use href="#bote"/></svg></div>
+          <div><p class="dias">60 DÍAS</p><h3>2 botes</h3></div>
+          <p class="precio"><b>47,90 €</b> <s>55,80 €</s></p>
+          <ul><li>23,95 € por bote</li><li>Envío gratis</li><li>Ahorras 7,90 €</li></ul>
+          <a class="btn btn-pri" data-pack="2" href="#packs">Reservar</a>
+        </article>
+        <article class="pack">
+          <div class="botes" aria-hidden="true"><svg viewBox="0 0 320 440"><use href="#bote"/></svg><svg viewBox="0 0 320 440"><use href="#bote"/></svg><svg viewBox="0 0 320 440"><use href="#bote"/></svg></div>
+          <div><p class="dias">90 DÍAS</p><h3>3 botes</h3></div>
+          <p class="precio"><b>62,90 €</b> <s>83,70 €</s></p>
+          <ul><li>20,97 € por bote</li><li>Envío gratis</li><li>Ahorras 20,80 €</li></ul>
+          <a class="btn" data-pack="3" href="#packs">Reservar</a>
+        </article>
+      </div>
+      <div class="garantias"><span>Pago seguro con tarjeta, Apple Pay y Google Pay</span><span>Envío 24-72 h en península</span><span>IVA incluido</span></div>
+    </div>
+  </section>
+
+  <section class="garantia" aria-labelledby="h-gar">
+    <div class="wrap">
+      <svg class="sello-30" viewBox="0 0 150 150" aria-hidden="true">
+        <circle cx="75" cy="75" r="70" style="fill:none;stroke:var(--clorofila)" stroke-width="2"/>
+        <circle cx="75" cy="75" r="58" style="fill:var(--menta)"/>
+        <text x="75" y="84" text-anchor="middle" font-family="Gloock, Georgia, serif" font-size="46" style="fill:var(--clorofila)">30</text>
+        <text x="75" y="104" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="9" letter-spacing="2" style="fill:var(--clorofila)">DÍAS</text>
+      </svg>
+      <div>
+        <p class="eyebrow">Garantía de satisfacción</p>
+        <h2 id="h-gar">Pruébalo un mes entero.</h2>
+        <p class="lead" style="margin-top:.8rem">Si en 30 días Clora no encaja en tu rutina, escríbenos y te devolvemos el importe del primer bote.</p>
+        <small>Garantía comercial voluntaria, adicional a tu derecho legal de desistimiento de 14 días naturales sobre productos precintados.</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq" id="preguntas" aria-labelledby="h-faq">
+    <div class="wrap">
+      <div class="cab">
+        <p class="eyebrow">Preguntas frecuentes</p>
+        <h2 id="h-faq">Lo que nos preguntáis.</h2>
+      </div>
+      <div>
+        <details open><summary>¿Qué es Clora exactamente?</summary><p>Un complemento alimenticio en cápsulas vegetales con cuatro ingredientes: extracto de hoja de menta, hoja de perejil, extracto de hoja de alfalfa y zinc. No es un medicamento.</p></details>
+        <details><summary>¿Cómo y cuándo se toma?</summary><p>Dos cápsulas al día con un vaso de agua, preferiblemente con el desayuno. No superes la dosis diaria recomendada.</p></details>
+        <details><summary>¿Cuánto dura un bote?</summary><p>30 días. Cada bote trae 60 cápsulas y la dosis diaria es de dos.</p></details>
+        <details><summary>¿Es apto para veganos?</summary><p>Sí. La cápsula es de origen vegetal (hidroxipropilmetilcelulosa) y ninguno de los ingredientes es de origen animal.</p></details>
+        <details><summary>¿Puedo tomarlo si estoy embarazada o tomo medicación?</summary><p>No se recomienda durante el embarazo ni la lactancia. Si tomas anticoagulantes (por ejemplo, acenocumarol o warfarina) consulta antes con tu médico o farmacéutico: el perejil y la alfalfa contienen vitamina K de forma natural.</p></details>
+        <details><summary>¿Cuánto tarda el envío?</summary><p>Entre 24 y 72 horas laborables en la península. Baleares, Canarias, Ceuta y Melilla: consulta condiciones.</p></details>
+        <details><summary>¿Cómo funciona la garantía?</summary><p>Escríbenos dentro de los 30 días siguientes a la entrega y te devolvemos el importe del primer bote, aunque esté abierto. Para productos sin abrir tienes además 14 días de desistimiento legal.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="lista" id="lista" aria-labelledby="h-lista">
+    <div class="wrap">
+      <div class="caja">
+        <div>
+          <p class="eyebrow">La lista verde</p>
+          <h2 id="h-lista">Sé de los primeros.</h2>
+          <p>Te avisamos del lanzamiento con un 15 % de descuento. Un correo al mes como mucho.</p>
+        </div>
+        <form class="f" id="f-lista" novalidate>
+          <label class="t" for="email-lista">Tu correo</label>
+          <div class="fila">
+            <input type="email" id="email-lista" name="email" placeholder="nombre@correo.com" autocomplete="email" required>
+            <button class="btn btn-flor" type="submit">Apuntarme</button>
+          </div>
+          <label class="ok"><input type="checkbox" id="rgpd-lista" required> <span>Acepto recibir comunicaciones de Clora y he leído la <a href="#privacidad">política de privacidad</a>.</span></label>
+          <p class="msg" role="status" hidden></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="marca" href="#inicio" style="color:var(--papel)"><svg aria-hidden="true"><use href="#logo"/></svg>clora</a>
+        <p style="margin-top:.9rem;max-width:22rem">Menta, perejil, clorofila de alfalfa y zinc. Cuatro ingredientes, dos cápsulas al día.</p>
+      </div>
+      <div>
+        <h4>Tienda</h4>
+        <ul><li><a href="#packs">Packs</a></li><li><a href="#formula">Fórmula</a></li><li><a href="#preguntas">Preguntas</a></li><li><a href="#lista">Lista verde</a></li></ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul id="privacidad"><li><a href="#inicio">Aviso legal</a></li><li><a href="#inicio">Política de privacidad</a></li><li><a href="#inicio">Política de cookies</a></li><li><a href="#inicio">Condiciones de venta</a></li><li><a href="#inicio">Desistimiento y devoluciones</a></li></ul>
+      </div>
+    </div>
+    <div class="avisos">
+      <p>Clora es un complemento alimenticio. No superar la dosis diaria expresamente recomendada. Los complementos alimenticios no deben utilizarse como sustituto de una dieta equilibrada y variada y de un modo de vida sano. Mantener fuera del alcance de los niños más pequeños. No recomendado durante el embarazo ni la lactancia.</p>
+      <p>Responsable: [Razón social] · NIF [—] · [Domicilio] · RGSEAA [26.—/TO] · contacto: hola@[dominio]</p>
+    </div>
+  </div>
+</footer>
+
+<div class="barra" id="barra" aria-hidden="true">
+  <p><b>clora</b><br>Desde 20,97 € / bote</p>
+  <a class="btn btn-pri" href="#packs" tabindex="-1">Elegir pack</a>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-t">
+  <form class="dlg f" id="f-reserva" novalidate>
+    <div class="dlg-cab">
+      <div><p class="eyebrow">Reserva sin pago</p><h3 id="dlg-t" style="font-size:1.8rem;margin-top:.4rem">Guárdame un pack</h3></div>
+      <button class="cerrar" type="button" id="dlg-x" aria-label="Cerrar">×</button>
+    </div>
+    <p style="color:var(--gris);font-size:.95rem">No cobramos nada ahora. El día del lanzamiento te enviamos el enlace de pago con un 15 % de descuento.</p>
+    <label class="t" for="pack-sel">Pack</label>
+    <select id="pack-sel" name="pack">
+      <option value="1">1 bote · 27,90 €</option>
+      <option value="2">2 botes · 47,90 €</option>
+      <option value="3">3 botes · 62,90 €</option>
+    </select>
+    <div class="resumen"><span>Con tu 15 %</span><span id="pack-precio">40,72 €</span></div>
+    <label class="t" for="email-res">Tu correo</label>
+    <input type="email" id="email-res" name="email" placeholder="nombre@correo.com" autocomplete="email" required>
+    <label class="ok"><input type="checkbox" id="rgpd-res" required> <span>Acepto recibir el aviso de lanzamiento y he leído la <a href="#privacidad">política de privacidad</a>.</span></label>
+    <button class="btn btn-pri" type="submit">Reservar mi pack</button>
+    <p class="msg" role="status" hidden></p>
+  </form>
+</dialog>
+
+<script>
+/* ===== CONFIGURACIÓN DE LA TIENDA =====
+   modo: 'prelanzamiento' → los botones abren la reserva (lista de espera).
+         'venta'          → los botones llevan al enlace de pago de cada pack.
+   pagos: enlaces de Stripe Payment Links o de checkout de Shopify por pack.
+   formEndpoint: URL que recibe { email, pack, origen } por POST (Klaviyo, Formspree, Shopify Flow…). */
+const CONFIG = {
+  modo: 'prelanzamiento',
+  pagos: { 1: '', 2: '', 3: '' },
+  formEndpoint: ''
+};
+const PRECIOS = { 1: 27.90, 2: 47.90, 3: 62.90 };
+const DTO_LANZAMIENTO = 0.15;
+const eur = n => n.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+
+const dlg = document.getElementById('dlg');
+const sel = document.getElementById('pack-sel');
+const precioRes = document.getElementById('pack-precio');
+const pintaPrecio = () => { precioRes.textContent = eur(PRECIOS[sel.value] * (1 - DTO_LANZAMIENTO)); };
+sel.addEventListener('change', pintaPrecio);
+
+if (CONFIG.modo === 'venta') {
+  document.getElementById('anuncio').innerHTML = '<b>Envío gratis</b> desde 2 botes · Garantía de satisfacción 30 días';
+  document.getElementById('packs-lead').textContent = 'Pago seguro. Envío en 24-72 h en península.';
+}
+document.querySelectorAll('[data-pack]').forEach(a => {
+  const n = a.dataset.pack;
+  if (CONFIG.modo === 'venta' && CONFIG.pagos[n]) {
+    a.href = CONFIG.pagos[n]; a.textContent = 'Comprar'; a.rel = 'noopener';
+    return;
+  }
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    sel.value = n; pintaPrecio();
+    dlg.showModal();
+  });
+});
+document.getElementById('dlg-x').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+async function enviar(form, datos) {
+  const msg = form.querySelector('.msg');
+  const email = form.querySelector('input[type=email]');
+  const rgpd = form.querySelector('input[type=checkbox]');
+  msg.hidden = false;
+  if (!email.checkValidity() || !email.value) { msg.textContent = 'Escribe un correo válido, por ejemplo nombre@correo.com.'; email.focus(); return; }
+  if (!rgpd.checked) { msg.textContent = 'Marca la casilla de privacidad para poder avisarte.'; rgpd.focus(); return; }
+  if (!CONFIG.formEndpoint) {
+    msg.textContent = 'Vista previa: este formulario aún no está conectado y no guarda datos. Al rellenar formEndpoint en la configuración, cada alta se enviará a tu herramienta de email.';
+    return;
+  }
+  try {
+    const r = await fetch(CONFIG.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ email: email.value, ...datos }) });
+    if (!r.ok) throw new Error(r.status);
+    msg.textContent = 'Hecho. Te escribiremos el día del lanzamiento con tu 15 %.';
+    form.reset(); pintaPrecio();
+  } catch {
+    msg.textContent = 'No hemos podido guardar tu correo. Inténtalo de nuevo en unos minutos.';
+  }
+}
+document.getElementById('f-lista').addEventListener('submit', e => { e.preventDefault(); enviar(e.target, { origen: 'lista' }); });
+document.getElementById('f-reserva').addEventListener('submit', e => { e.preventDefault(); enviar(e.target, { origen: 'reserva', pack: sel.value }); });
+
+/* Barra fija en móvil: aparece al pasar el hero y se oculta sobre los packs */
+const barra = document.getElementById('barra');
+const hero = document.querySelector('.hero');
+const packs = document.getElementById('packs');
+let pasadoHero = false, enPacks = false;
+const actualiza = () => barra.classList.toggle('vis', pasadoHero && !enPacks);
+new IntersectionObserver(([e]) => { pasadoHero = !e.isIntersecting && e.boundingClientRect.top < 0; actualiza(); }).observe(hero);
+new IntersectionObserver(([e]) => { enPacks = e.isIntersecting; actualiza(); }, { threshold: .15 }).observe(packs);
+</script>

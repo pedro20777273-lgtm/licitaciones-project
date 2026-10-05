@@ -1,0 +1,547 @@
+<title>Kit de lanzamiento Clora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: índice lateral fijo + columna de documento de trabajo; bloques de datos (tablas, calculadora, móvil) rompen la columna */
+:root{
+  --bg:#F5F8F4; --sup:#FFFFFF; --tinta:#13261B; --suave:#55645B; --linea:#D7E1D9;
+  --verde:#2F6B45; --verde-f:#E3F0E6; --lila:#5E4CAB; --lila-f:#ECE7FB; --ok:#2F6B45; --alerta:#A0442F; --alerta-f:#F8E7E2;
+  --f-display:'Gloock', Georgia, serif; --f-body:'Figtree', system-ui, sans-serif; --f-mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1914; --sup:#16231C; --tinta:#E4EDE6; --suave:#9DB0A3; --linea:#2A3B31;
+  --verde:#7CC596; --verde-f:#1C3326; --lila:#C2B5F3; --lila-f:#272240; --ok:#7CC596; --alerta:#F0A38F; --alerta-f:#3A2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1914; --sup:#16231C; --tinta:#E4EDE6; --suave:#9DB0A3; --linea:#2A3B31;
+  --verde:#7CC596; --verde-f:#1C3326; --lila:#C2B5F3; --lila-f:#272240; --ok:#7CC596; --alerta:#F0A38F; --alerta-f:#3A2420; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tinta);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--verde)}
+:focus-visible{outline:3px solid var(--lila);outline-offset:2px;border-radius:4px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;max-width:1240px;margin-inline:auto;padding-inline:24px;padding-block:40px 80px}
+aside nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);display:grid;gap:2px;font-size:.92rem}
+aside .logo{font:400 1.8rem/1 var(--f-display);color:var(--tinta);margin-bottom:18px;display:block;text-decoration:none}
+aside nav a{color:var(--suave);text-decoration:none;padding:6px 10px;border-radius:8px}
+aside nav a:hover{background:var(--verde-f);color:var(--tinta)}
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:24px;padding-inline:16px;padding-block:20px 60px}
+  aside{min-width:0}
+  aside nav{position:static;display:flex;overflow-x:auto;gap:4px;padding-bottom:6px}
+  aside nav a{white-space:nowrap;background:var(--sup);border:1px solid var(--linea)}
+  aside .logo{display:none}
+}
+main{min-width:0;display:grid;gap:64px}
+section{display:grid;gap:20px;min-width:0;scroll-margin-top:24px}
+h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
+h1{font:400 clamp(2.4rem,5vw,3.6rem)/1.05 var(--f-display)}
+h2{font:400 clamp(1.8rem,3.4vw,2.4rem)/1.1 var(--f-display)}
+h3{font:600 1.1rem/1.3 var(--f-body)}
+p{margin:0;max-width:68ch}
+.eyebrow{font:500 .72rem/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--lila)}
+.suave{color:var(--suave)}
+.enlaces{display:flex;flex-wrap:wrap;gap:10px}
+.boton{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:var(--tinta);color:var(--bg);text-decoration:none;font-weight:600;font-size:.92rem;border:0;cursor:pointer}
+.boton.sec{background:transparent;color:var(--tinta);box-shadow:inset 0 0 0 1.5px var(--linea)}
+.caja{background:var(--sup);border:1px solid var(--linea);border-radius:14px;padding:20px 22px;min-width:0}
+.decisiones{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.decisiones .caja{display:grid;gap:6px;align-content:start}
+.decisiones b{font:400 1.35rem/1.15 var(--f-display)}
+.decisiones span{font-size:.9rem;color:var(--suave)}
+.tabla{overflow-x:auto;border:1px solid var(--linea);border-radius:14px;background:var(--sup)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--linea);vertical-align:top}
+th{font:500 .7rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--suave);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font:500 .7rem/1 var(--f-mono);letter-spacing:.06em;padding:5px 8px;border-radius:999px;background:var(--verde-f);color:var(--verde);white-space:nowrap}
+.pill.lila{background:var(--lila-f);color:var(--lila)}
+.pill.alerta{background:var(--alerta-f);color:var(--alerta)}
+.aviso{border-left:3px solid var(--alerta);background:var(--alerta-f);padding:14px 16px;border-radius:0 10px 10px 0}
+.aviso b{color:var(--alerta)}
+.nota{border-left:3px solid var(--lila);background:var(--lila-f);padding:14px 16px;border-radius:0 10px 10px 0}
+
+/* Instagram */
+.ig{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:900px){.ig{grid-template-columns:1fr}}
+.movil{background:#000;border-radius:44px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);max-width:360px;width:100%;justify-self:center}
+.pant{background:#0C0C0C;color:#F2F2F2;border-radius:34px;overflow:hidden;font-size:12.5px;line-height:1.35}
+.pant .barra{display:flex;justify-content:space-between;padding:10px 18px 6px;font-weight:600}
+.pant .cab-ig{display:flex;align-items:center;gap:6px;padding:4px 14px 10px;font-weight:700;font-size:15px}
+.pant .verif{width:14px;height:14px;border-radius:50%;background:#3797F0;display:inline-block}
+.pant .perfil{display:grid;grid-template-columns:78px 1fr;gap:16px;align-items:center;padding:0 14px}
+.pant .perfil img{width:78px;height:78px;border-radius:50%;border:2px solid #333}
+.pant .stats{display:flex;justify-content:space-around;text-align:center}
+.pant .stats b{display:block;font-size:15px}
+.pant .bio{padding:10px 14px 0;white-space:pre-line}
+.pant .bio b{display:block}
+.pant .bio a{color:#E0F1FF;text-decoration:none}
+.pant .acc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px 14px}
+.pant .acc span{background:#262626;border-radius:8px;padding:7px 0;text-align:center;font-weight:600}
+.pant .acc span:first-child{background:#0095F6}
+.pant .dest{display:flex;gap:12px;padding:6px 14px 12px;overflow:hidden}
+.pant .dest div{display:grid;gap:4px;justify-items:center;font-size:10.5px}
+.pant .dest img{width:56px;height:56px;border-radius:50%;border:2px solid #333;padding:2px;background:#0C0C0C}
+.pant .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.pant .grid img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.copiable{position:relative}
+.copiable pre{white-space:pre-wrap;font:400 .9rem/1.55 var(--f-body);margin:0;background:var(--sup);border:1px solid var(--linea);border-radius:12px;padding:16px 18px;padding-right:96px}
+.copiar{position:absolute;top:10px;right:10px;font:500 .72rem/1 var(--f-mono);letter-spacing:.06em;padding:8px 10px;border-radius:8px;border:1px solid var(--linea);background:var(--bg);color:var(--tinta);cursor:pointer}
+details.pieza{background:var(--sup);border:1px solid var(--linea);border-radius:12px}
+details.pieza summary{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:10px 14px;cursor:pointer;list-style:none}
+details.pieza summary::-webkit-details-marker{display:none}
+details.pieza summary img{width:52px;height:65px;object-fit:cover;border-radius:6px}
+details.pieza summary small{display:block;color:var(--suave);font-size:.8rem}
+details.pieza .cuerpo{padding:0 14px 14px;display:grid;gap:12px}
+.piezas{display:grid;gap:8px}
+
+/* Embudo */
+.embudo{display:grid;gap:10px}
+.etapa{display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,220px);gap:16px;align-items:start;background:var(--sup);border:1px solid var(--linea);border-radius:14px;padding:16px 18px}
+.etapa .n{font:400 2rem/1 var(--f-display);color:var(--lila)}
+.etapa ul{margin:6px 0 0;padding-left:18px;color:var(--suave);font-size:.92rem}
+.etapa .kpi{font-size:.85rem;display:grid;gap:4px;border-left:1px dashed var(--linea);padding-left:14px}
+.etapa .kpi b{font:500 .68rem/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--suave)}
+@media (max-width:700px){.etapa{grid-template-columns:36px minmax(0,1fr)}.etapa .kpi{grid-column:2;border-left:0;padding-left:0;border-top:1px dashed var(--linea);padding-top:10px}}
+.puerta{border:2px solid var(--verde);border-radius:14px;padding:16px 18px;background:var(--verde-f)}
+
+/* Calculadora */
+.calc{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.calc{grid-template-columns:1fr}}
+.campos{display:grid;gap:10px}
+.campo{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;font-size:.9rem}
+.campo input{width:100%;font:500 .95rem/1 var(--f-mono);padding:8px 10px;border-radius:8px;border:1px solid var(--linea);background:var(--bg);color:var(--tinta);text-align:right}
+.res-grande{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.res-grande div{background:var(--bg);border-radius:10px;padding:12px 14px}
+.res-grande b{display:block;font:400 1.6rem/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.res-grande span{font-size:.8rem;color:var(--suave)}
+.pos{color:var(--ok)} .neg{color:var(--alerta)}
+
+/* Legal */
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.dos{grid-template-columns:1fr}}
+.dos ul{margin:8px 0 0;padding-left:18px;display:grid;gap:8px;font-size:.93rem}
+.check{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.check li{display:grid;grid-template-columns:22px 1fr;gap:10px;background:var(--sup);border:1px solid var(--linea);border-radius:12px;padding:12px 14px;font-size:.93rem}
+.check input{margin-top:4px;accent-color:var(--verde)}
+.check small{display:block;color:var(--suave);font-size:.82rem;margin-top:2px}
+
+/* Calendario */
+.semanas{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.semanas .caja h3{font:400 1.3rem/1.1 var(--f-display);margin-bottom:8px}
+.semanas ul{margin:0;padding-left:18px;font-size:.9rem;display:grid;gap:6px}
+footer.pie{font-size:.85rem;color:var(--suave);border-top:1px solid var(--linea);padding-top:20px}
+</style>
+
+<div class="layout">
+<aside>
+  <nav aria-label="Secciones del kit">
+    <a class="logo" href="#resumen">clora</a>
+    <a href="#resumen">Resumen</a>
+    <a href="#producto">Producto</a>
+    <a href="#proveedores">Proveedores</a>
+    <a href="#instagram">Instagram</a>
+    <a href="#embudo">Embudo</a>
+    <a href="#numeros">Números</a>
+    <a href="#legal">Legal</a>
+    <a href="#calendario">30 días</a>
+    <a href="#pendiente">Lo que falta</a>
+  </nav>
+</aside>
+
+<main>
+<!-- RESUMEN -->
+<section id="resumen">
+  <p class="eyebrow">Kit de lanzamiento · octubre 2026</p>
+  <h1>Clora, del nicho a la tienda.</h1>
+  <p class="suave">Marca nueva de complemento alimenticio con cuatro ingredientes, inspirada en el nicho que viste (menta, perejil y clorofila contra el mal olor), pero rediseñada para poder venderse legalmente en España. Todo lo que hay aquí está construido; lo que requiere tu identidad (cuentas, pagos, contratos) está en <a href="#pendiente">Lo que falta</a>.</p>
+  <div class="enlaces">
+    <a class="boton" href="https://claude.ai/artifact/QjFgENdrnCefvPcy4sDrVw" target="_blank" rel="noopener">Abrir la tienda (landing)</a>
+    <a class="boton sec" href="#instagram">Ver el perfil de Instagram</a>
+  </div>
+  <div class="decisiones">
+    <div class="caja"><span class="eyebrow">Nombre</span><b>Clora</b><span>De «clorofila». Cinco letras, se pronuncia igual en cualquier idioma. Sin marca idéntica localizada en complementos.</span></div>
+    <div class="caja"><span class="eyebrow">Producto</span><b>Menta + perejil + clorofila de alfalfa + zinc</b><span>60 cápsulas vegetales, 2 al día, 30 días.</span></div>
+    <div class="caja"><span class="eyebrow">Posicionamiento</span><b>«Tu ritual verde»</b><span>Transparencia total de dosis y el único claim legal disponible: zinc y piel.</span></div>
+    <div class="caja"><span class="eyebrow">Precio</span><b>27,90 € · 47,90 € · 62,90 €</b><span>Packs de 1, 2 y 3 botes. Envío gratis desde 2.</span></div>
+    <div class="caja"><span class="eyebrow">Proveedor</span><b>Fabricante en España o UE</b><span>Marca blanca con fórmula propia. Primero validar demanda sin stock.</span></div>
+    <div class="caja"><span class="eyebrow">Embudo</span><b>Instagram → landing → lista → compra</b><span>Prelanzamiento con lista de espera y 15 %; luego venta directa.</span></div>
+  </div>
+  <div class="aviso"><b>El punto crítico.</b> En la UE no existe ninguna declaración autorizada que permita decir que un complemento elimina o neutraliza el olor corporal o el mal aliento. La EFSA concluyó que el olor del aliento no es una «función del organismo» y la autoridad publicitaria británica (ASA) declaró no autorizado «desodoriza el cuerpo» en una clorofila líquida. Neutralea vende con ese claim; tú no puedes copiarlo en España. Por eso Clora vende ritual, transparencia y zinc para la piel, y deja el «olor» fuera del texto.</div>
+</section>
+
+<!-- PRODUCTO -->
+<section id="producto">
+  <p class="eyebrow">Producto</p>
+  <h2>Cuatro ingredientes, dosis declaradas.</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Ingrediente</th><th>Forma</th><th class="num">Por 2 cáps.</th><th>Por qué</th></tr></thead>
+    <tbody>
+      <tr><td><b>Menta piperita</b><br><span class="suave">Mentha × piperita L.</span></td><td>Extracto seco de hoja</td><td class="num">200 mg</td><td>Planta reconocible; conecta con el nicho de «frescor» sin prometer efectos.</td></tr>
+      <tr><td><b>Perejil</b><br><span class="suave">Petroselinum crispum</span></td><td>Hoja en polvo</td><td class="num">200 mg</td><td>Ingrediente cotidiano y barato. Aporta vitamina K: aviso para anticoagulados.</td></tr>
+      <tr><td><b>Clorofila de alfalfa</b><br><span class="suave">Medicago sativa L.</span></td><td>Extracto de hoja (pedir % de clorofila)</td><td class="num">150 mg</td><td>Sustituye a la clorofilina cúprica (E141ii), cuya seguridad la EFSA no pudo evaluar en 2015 y que aporta cobre.</td></tr>
+      <tr><td><b>Zinc</b><br><span class="suave">Gluconato de zinc</span></td><td>Mineral</td><td class="num">10 mg · 100 % VRN</td><td>Habilita claims autorizados (Reg. UE 432/2012): piel, daño oxidativo, sistema inmunitario. Mínimo exigido: 15 % VRN.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="suave">Llenado diario ≈ 620 mg (≈ 310 mg por cápsula de tamaño 0, dentro de capacidad). El fabricante debe confirmar excipientes; si añade antiaglomerante, se declara en la lista de ingredientes de la web y la etiqueta.</p>
+  <div class="nota"><b>Pedir al fabricante que valide:</b> idoneidad de la fórmula para notificarse en España, contenido de clorofila del extracto de alfalfa, metales pesados, vida útil (objetivo 24 meses), apto vegano y advertencias de alfalfa (personas con lupus o enfermedad autoinmune).</div>
+</section>
+
+<!-- PROVEEDORES -->
+<section id="proveedores">
+  <p class="eyebrow">Proveedores</p>
+  <h2>A quién pedir presupuesto esta semana.</h2>
+  <p class="suave">Los MOQ y precios no son públicos: hay que pedirlos. Recomiendo enviar la solicitud de abajo a los cuatro primeros y decidir con tres presupuestos comparables.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Proveedor</th><th>Dónde</th><th>Modelo</th><th>MOQ</th><th>Prioridad</th></tr></thead>
+    <tbody>
+      <tr><td><b>Innova Food &amp; Pharma</b></td><td>Alcobendas (Madrid), a ~1 h de Toledo</td><td>Marca blanca y fabricación de complementos</td><td>A consultar</td><td><span class="pill">1 · cercanía</span></td></tr>
+      <tr><td><b>Masenz Group</b></td><td>Sant Just Desvern (Barcelona) · tel. 933 484 605</td><td>Fabricación a terceros; cápsula dura, botes y blíster</td><td>A consultar</td><td><span class="pill">2</span></td></tr>
+      <tr><td><b>Laboratorios MS</b></td><td>Málaga</td><td>Fabricación a terceros y diseño de fórmula</td><td>A consultar</td><td><span class="pill">3</span></td></tr>
+      <tr><td><b>Pharma Manufacture</b></td><td>Letonia (UE)</td><td>Marca blanca, GMP/HACCP, fórmulas propias o a medida, apoyo en registro y etiquetado</td><td>«MOQ pequeño»</td><td><span class="pill">4 · precio</span></td></tr>
+      <tr><td><b>BIO PAK Nutraceuticals</b></td><td>Eslovenia (UE)</td><td>Cápsulas para marca blanca, producción propia</td><td>A consultar</td><td><span class="pill lila">reserva</span></td></tr>
+      <tr><td><b>Activ'Inside</b></td><td>Francia</td><td>Fabricación de cápsulas</td><td>1.000 uds · 8 semanas</td><td><span class="pill lila">referencia</span></td></tr>
+      <tr><td><b>Suplify</b></td><td>Alemania</td><td>Dropshipping marca blanca, sin stock, desde 29 $/mes</td><td>Sin MOQ</td><td><span class="pill lila">solo si su catálogo encaja</span></td></tr>
+      <tr><td><b>Alibaba / AliExpress</b></td><td>China</td><td>Importación</td><td>—</td><td><span class="pill alerta">descartado</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="suave">Descarto China: como importador de un tercer país asumes toda la responsabilidad sanitaria y el control en frontera, y el riesgo de calidad y de etiquetado es alto. Suplify sirve para validar con un producto de catálogo, pero no fabrica esta fórmula.</p>
+  <div class="copiable">
+    <button class="copiar" type="button" data-copiar="rfq">Copiar</button>
+<pre id="rfq">Asunto: Solicitud de presupuesto · complemento alimenticio en cápsulas (marca propia)
+
+Buenos días:
+
+Estoy lanzando una marca propia de complementos alimenticios para el mercado español y busco fabricante para el siguiente producto:
+
+· Formato: 60 cápsulas vegetales (HPMC) por bote; dosis diaria 2 cápsulas.
+· Fórmula por dosis diaria:
+  – Extracto seco de hoja de menta (Mentha × piperita L.): 200 mg
+  – Hoja de perejil en polvo (Petroselinum crispum): 200 mg
+  – Extracto de hoja de alfalfa (Medicago sativa L.), indicar % de clorofila: 150 mg
+  – Zinc (gluconato de zinc): 10 mg de zinc elemental
+· Envase: bote blanco con precinto de inducción y tapa a rosca; etiqueta con mi diseño.
+
+Les agradecería que me indicaran:
+1. Pedido mínimo y precio unitario para 500, 1.000 y 3.000 unidades (producto acabado y etiquetado).
+2. Plazo de fabricación y coste de muestras.
+3. Certificaciones de la planta (GMP, ISO 22000, IFS u otras).
+4. Analíticas por lote incluidas (certificado de análisis, metales pesados, microbiología, plaguicidas) y vida útil estimada.
+5. Si revisan la conformidad de la etiqueta y dan soporte para la notificación de puesta en el mercado en España.
+6. Si la fórmula puede certificarse como apta para veganos.
+7. Condiciones de pago y opciones de almacenaje o envío.
+
+Si recomiendan algún ajuste de fórmula o de excipientes, estaré encantado de valorarlo.
+
+Un saludo,
+[Nombre y apellidos]
+[Empresa o NIF] · [Teléfono] · [Correo]</pre>
+  </div>
+  <details class="pieza"><summary><span class="pill lila">EN</span><span>Versión en inglés para proveedores de la UE</span><span class="suave">abrir</span></summary>
+    <div class="cuerpo copiable">
+      <button class="copiar" type="button" data-copiar="rfq-en">Copiar</button>
+<pre id="rfq-en">Subject: Quotation request · private label food supplement capsules
+
+Hello,
+
+I am launching a private label food supplement brand for the Spanish market and I am looking for a manufacturer for the following product:
+
+· Format: 60 vegetable capsules (HPMC) per bottle; daily dose 2 capsules.
+· Formula per daily dose:
+  – Peppermint leaf dry extract (Mentha × piperita L.): 200 mg
+  – Parsley leaf powder (Petroselinum crispum): 200 mg
+  – Alfalfa leaf extract (Medicago sativa L.), please state chlorophyll %: 150 mg
+  – Zinc (zinc gluconate): 10 mg elemental zinc
+· Packaging: white bottle with induction seal and screw cap; label with my artwork.
+
+Could you please share:
+1. MOQ and unit price for 500, 1,000 and 3,000 units (finished and labelled).
+2. Lead time and sample cost.
+3. Plant certifications (GMP, ISO 22000, IFS or others).
+4. Batch testing included (CoA, heavy metals, microbiology, pesticides) and expected shelf life.
+5. Whether you review label compliance for Spain and support the market notification.
+6. Whether the formula can be certified vegan.
+7. Payment terms and storage or shipping options.
+
+Kind regards,
+[Name] · [Company] · [Phone] · [Email]</pre>
+    </div>
+  </details>
+</section>
+
+<!-- INSTAGRAM -->
+<section id="instagram">
+  <p class="eyebrow">Instagram</p>
+  <h2>El perfil, listo para subir.</h2>
+  <div class="ig">
+    <div class="movil" aria-label="Vista previa del perfil de Instagram">
+      <div class="pant">
+        <div class="barra"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="cab-ig">clora.es <span class="verif" title="La verificación es de pago (Meta Verified)"></span></div>
+        <div class="perfil">
+          <img src="ig/perfil.png" alt="Foto de perfil de Clora">
+          <div class="stats"><div><b>9</b>publicaciones</div><div><b>0</b>seguidores</div><div><b>0</b>seguidos</div></div>
+        </div>
+        <div class="bio"><b>Clora · Menta y clorofila</b>Menta, perejil y clorofila + zinc 🌿
+4 ingredientes, 2 cápsulas al día
+Sin milagros, con cantidades
+↓ Lista verde: −15 % en el lanzamiento
+<a href="https://claude.ai/artifact/QjFgENdrnCefvPcy4sDrVw" target="_blank" rel="noopener">clora.es</a></div>
+        <div class="acc"><span>Seguir</span><span>Mensaje</span><span>Correo</span></div>
+        <div class="dest">
+          <div><img src="ig/destacado-formula.png" alt="">Fórmula</div>
+          <div><img src="ig/destacado-ritual.png" alt="">Ritual</div>
+          <div><img src="ig/destacado-preguntas.png" alt="">Preguntas</div>
+          <div><img src="ig/destacado-envios.png" alt="">Envíos</div>
+          <div><img src="ig/destacado-lista.png" alt="">Lista</div>
+        </div>
+        <div class="grid">
+          <img src="ig/09-lanzamiento.jpg" alt="Post: Tu ritual verde">
+          <img src="ig/08-manifiesto.jpg" alt="Post: No te prometemos milagros">
+          <img src="ig/07-zinc.jpg" alt="Post: zinc">
+          <img src="ig/06-cuatro.jpg" alt="Post: cuatro ingredientes">
+          <img src="ig/05-menta.jpg" alt="Post: menta">
+          <img src="ig/04-packs.jpg" alt="Post: packs">
+          <img src="ig/03-perejil.jpg" alt="Post: perejil">
+          <img src="ig/02-ritual.jpg" alt="Post: ritual">
+          <img src="ig/01-alfalfa.jpg" alt="Post: alfalfa">
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;gap:16px;min-width:0">
+      <div class="caja" style="display:grid;gap:8px">
+        <h3>Usuario</h3>
+        <p class="suave">Por orden de preferencia: <b>@clora.es</b>, @somosclora, @clora.ritual, @cloraverde. Comprueba disponibilidad al crear la cuenta y compra el dominio con el mismo nombre (clora.es o somosclora.es) el mismo día.</p>
+      </div>
+      <div class="copiable">
+        <button class="copiar" type="button" data-copiar="bio">Copiar bio</button>
+<pre id="bio">Menta, perejil y clorofila + zinc 🌿
+4 ingredientes, 2 cápsulas al día
+Sin milagros, con cantidades
+↓ Lista verde: −15 % en el lanzamiento</pre>
+      </div>
+      <div class="caja" style="display:grid;gap:8px">
+        <h3>Montaje en 15 minutos</h3>
+        <ol style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:.93rem">
+          <li>Crea la cuenta con un correo nuevo de la marca (no el personal) y pásala a cuenta profesional, categoría «Salud y belleza».</li>
+          <li>Nombre visible: «Clora · Menta y clorofila». Foto de perfil: <code>perfil.png</code>.</li>
+          <li>Publica los 9 posts en el orden 01 → 09 para que el perfil quede como en la vista previa.</li>
+          <li>Sube la story de la lista verde con el sticker de enlace y guárdala en el destacado «Lista».</li>
+          <li>Enlace de la bio: la landing con UTM <code>?utm_source=instagram&amp;utm_medium=bio</code>.</li>
+        </ol>
+      </div>
+      <p class="suave" style="font-size:.88rem">Instagram muestra la cuadrícula en 3:4; los posts están en 4:5 con el contenido dentro de la zona segura. El check azul de la vista previa es Meta Verified, de pago y opcional.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:12px">Textos de cada publicación</h3>
+  <div class="piezas" id="piezas"></div>
+
+  <div class="caja" style="display:grid;gap:10px">
+    <h3>Fotos de estilo de vida (cuando tengas el bote real)</h3>
+    <p class="suave">Las piezas de arriba son gráficas y no necesitan fotos. Para Reels y anuncios, haz estas tres fotos con el producto físico y luz de ventana:</p>
+    <ul style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:.93rem">
+      <li><b>Encimera de mañana:</b> bote junto a una taza de café, ramas de menta fresca y una servilleta de lino lila. Plano cenital y 45°.</li>
+      <li><b>Mano con cápsulas:</b> dos cápsulas en la palma sobre fondo menta claro, bote desenfocado detrás.</li>
+      <li><b>Mercado:</b> manojos de perejil y menta en papel de estraza con el bote en medio.</li>
+    </ul>
+    <p class="suave" style="font-size:.88rem">Si generas imágenes con IA, no representes un producto distinto al real y etiqueta el contenido como generado con IA cuando Meta lo pida.</p>
+  </div>
+</section>
+
+<!-- EMBUDO -->
+<section id="embudo">
+  <p class="eyebrow">Embudo de venta</p>
+  <h2>Del scroll al segundo pedido.</h2>
+  <div class="embudo">
+    <div class="etapa"><span class="n">1</span><div><h3>Atención</h3><ul><li>3 Reels por semana (ideas abajo) y 1 carrusel.</li><li>Anuncios de Meta: 3 creatividades, público amplio en España, 20–30 €/día.</li><li>20 microinfluencers (5–30 k) con envío de producto; siempre etiquetado #publi.</li></ul></div><div class="kpi"><b>Mide</b>Retención 3 s ≥ 25 %<br>CTR del enlace ≥ 1 %</div></div>
+    <div class="etapa"><span class="n">2</span><div><h3>Perfil</h3><ul><li>Bio con promesa clara y enlace con UTM.</li><li>Destacados: Fórmula, Ritual, Preguntas, Envíos, Lista.</li></ul></div><div class="kpi"><b>Mide</b>Visita de perfil → clic en enlace ≥ 5 %</div></div>
+    <div class="etapa"><span class="n">3</span><div><h3>Landing</h3><ul><li>Hero con producto y promesa legal, fórmula, ficha de dosis, packs 1/2/3, garantía, FAQ.</li><li>En prelanzamiento: lista verde y reserva sin pago con 15 %.</li><li>En venta: botones a Stripe Payment Links o checkout de Shopify.</li></ul></div><div class="kpi"><b>Mide</b>Prelanzamiento: alta ≥ 20 % de visitas<br>Venta: conversión 2–3,5 %<br>Ticket medio ≥ 45 €</div></div>
+    <div class="etapa"><span class="n">4</span><div><h3>Checkout</h3><ul><li>Order bump: «añade un bote más por 20 €».</li><li>Tarjeta, Apple Pay y Google Pay. Bizum solo con TPV Redsys.</li></ul></div><div class="kpi"><b>Mide</b>Abandono de checkout ≤ 60 %</div></div>
+    <div class="etapa"><span class="n">5</span><div><h3>Postcompra</h3><ul><li>Página de gracias con upsell de un clic (−20 % durante 10 min).</li><li>Emails: día 0 cómo tomarlo, día 3 envío, día 10 ritual, día 21 reseña, día 24 reposición.</li><li>Carrito abandonado: 1 h y 24 h.</li></ul></div><div class="kpi"><b>Mide</b>Recompra a 60 días ≥ 25 %</div></div>
+    <div class="etapa"><span class="n">6</span><div><h3>Retargeting</h3><ul><li>Visitantes de la landing en 7 días: creatividad de packs y garantía.</li><li>Clientes a día 25: recordatorio de reposición.</li></ul></div><div class="kpi"><b>Mide</b>ROAS de retargeting ≥ 3</div></div>
+  </div>
+  <div class="puerta"><h3>Regla de decisión antes de fabricar</h3><p style="margin-top:6px">Tres semanas de lista verde con 300–500 € en anuncios. Si consigues <b>300 altas o más con un coste por alta de 1,50 € o menos</b>, encarga el lote. Si el coste por alta pasa de 3 €, cambia el ángulo creativo antes de gastar en stock.</p></div>
+  <div class="caja" style="display:grid;gap:8px">
+    <h3>Ideas de Reels</h3>
+    <ul style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:.93rem">
+      <li><b>«He leído 10 etiquetas de cápsulas verdes»</b>: qué esconden las mezclas propietarias, sin nombrar marcas. Cierra con la ficha de Clora.</li>
+      <li><b>Del mercado a la cápsula</b>: perejil y menta frescos, polvo, cápsula. Sonido ambiente, sin voz.</li>
+      <li><b>Mi ritual de 10 segundos</b>: plano fijo de la cafetera por la mañana.</li>
+      <li><b>¿Qué significa %VRN?</b>: educativo de 20 s con el post del zinc.</li>
+      <li><b>Llega el primer lote</b>: detrás de cámaras del pedido y del etiquetado.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- NÚMEROS -->
+<section id="numeros">
+  <p class="eyebrow">Números</p>
+  <h2>Cuánto deja cada pedido.</h2>
+  <p class="suave">Supuestos editables. El coste unitario es una estimación hasta tener presupuestos; el IVA del 10 % es el habitual en complementos alimenticios, confírmalo con tu asesor.</p>
+  <div class="calc">
+    <div class="caja campos">
+      <label class="campo" for="c-unit">Coste por bote (€)<input id="c-unit" type="number" step="0.1" value="3.50"></label>
+      <label class="campo" for="c-env">Envío real por pedido (€)<input id="c-env" type="number" step="0.1" value="4.50"></label>
+      <label class="campo" for="c-emb">Embalaje por pedido (€)<input id="c-emb" type="number" step="0.05" value="0.45"></label>
+      <label class="campo" for="c-pct">Comisión de pago (%)<input id="c-pct" type="number" step="0.1" value="1.5"></label>
+      <label class="campo" for="c-fija">Comisión fija (€)<input id="c-fija" type="number" step="0.05" value="0.25"></label>
+      <label class="campo" for="c-iva">IVA (%)<input id="c-iva" type="number" step="1" value="10"></label>
+      <label class="campo" for="c-cpa">Coste de adquisición (€)<input id="c-cpa" type="number" step="1" value="18"></label>
+      <label class="campo" for="c-m1">Mezcla pack 1 (%)<input id="c-m1" type="number" step="5" value="30"></label>
+      <label class="campo" for="c-m2">Mezcla pack 2 (%)<input id="c-m2" type="number" step="5" value="50"></label>
+      <label class="campo" for="c-m3">Mezcla pack 3 (%)<input id="c-m3" type="number" step="5" value="20"></label>
+    </div>
+    <div style="display:grid;gap:12px;min-width:0">
+      <div class="tabla"><table>
+        <thead><tr><th>Pack</th><th class="num">Cobro</th><th class="num">Neto s/IVA</th><th class="num">Costes</th><th class="num">Margen</th><th class="num">Tras CPA</th></tr></thead>
+        <tbody id="t-packs"></tbody>
+      </table></div>
+      <div class="res-grande" id="res"></div>
+    </div>
+  </div>
+  <h3>Inversión de arranque estimada</h3>
+  <div class="tabla"><table>
+    <thead><tr><th>Partida</th><th class="num">Estimación</th><th>Nota</th></tr></thead>
+    <tbody>
+      <tr><td>Lote inicial (1.000 botes)</td><td class="num">2.500–5.000 €</td><td>Depende del presupuesto; con 500 uds sube el unitario.</td></tr>
+      <tr><td>Validación con lista verde</td><td class="num">300–500 €</td><td>3 semanas de anuncios.</td></tr>
+      <tr><td>Campaña de lanzamiento</td><td class="num">600–900 €</td><td>30 días a 20–30 €/día.</td></tr>
+      <tr><td>Muestras a microinfluencers</td><td class="num">≈ 250 €</td><td>30 botes y envíos.</td></tr>
+      <tr><td>Tienda (Shopify) y dominio</td><td class="num">≈ 45 €/mes</td><td>Alternativa: web estática + Stripe, sin cuota fija.</td></tr>
+      <tr><td>Gestoría, seguro de RC de producto, tasas</td><td class="num">≈ 600–900 €/año</td><td>Tasas sanitarias según comunidad autónoma.</td></tr>
+      <tr><td><b>Total primer trimestre</b></td><td class="num"><b>≈ 4.500–7.500 €</b></td><td>Sin sueldo propio.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- LEGAL -->
+<section id="legal">
+  <p class="eyebrow">Legal</p>
+  <h2>Qué puedes decir y qué no.</h2>
+  <div class="dos">
+    <div class="caja"><span class="pill">Sí</span><ul>
+      <li>«El zinc contribuye al mantenimiento de la piel en condiciones normales» (y daño oxidativo, sistema inmunitario). Reg. (UE) 432/2012.</li>
+      <li>«Cuatro ingredientes», «cantidades a la vista», «menta, perejil y clorofila de alfalfa».</li>
+      <li>«Tu ritual verde diario», «dos cápsulas con el desayuno».</li>
+      <li>«Cápsula vegetal», «fabricado en la UE», «apto para veganos», solo si el fabricante lo certifica.</li>
+    </ul></div>
+    <div class="caja"><span class="pill alerta">No</span><ul>
+      <li>«Elimina» o «neutraliza el olor corporal», «adiós al sudor»: no hay declaración autorizada.</li>
+      <li>«Mal aliento», «detox», «depura», «elimina toxinas».</li>
+      <li>«Clínicamente probado» o testimonios que atribuyan efectos («ya no huelo»). Las reseñas que publiques también son publicidad.</li>
+      <li>En anuncios: «¿Hueles mal?», «¿Te avergüenza tu sudor?». Meta los rechaza por atributos personales y autopercepción negativa.</li>
+    </ul></div>
+  </div>
+  <h3>Checklist de puesta en marcha</h3>
+  <ul class="check" id="checklist">
+    <li><input type="checkbox" id="l1"><label for="l1">Revisa tu contrato laboral<small>Cláusulas de exclusividad, plena dedicación o no competencia antes de darte de alta.</small></label></li>
+    <li><input type="checkbox" id="l2"><label for="l2">Alta en Hacienda (036/037) y en el RETA, o constituir una SL<small>Epígrafe de comercio al por menor; consulta la cuota reducida para nuevos autónomos.</small></label></li>
+    <li><input type="checkbox" id="l3"><label for="l3">Inscripción en el RGSEAA, clave 26 (complementos alimenticios)<small>Ante la Consejería de Sanidad de Castilla-La Mancha si la empresa está en Toledo.</small></label></li>
+    <li><input type="checkbox" id="l4"><label for="l4">Notificación de puesta en el mercado (RD 1487/2009)<small>Con el modelo de etiqueta, antes o en el momento de empezar a vender. No es una autorización: la responsabilidad sigue siendo tuya.</small></label></li>
+    <li><input type="checkbox" id="l5"><label for="l5">Etiqueta conforme (Reg. UE 1169/2011 y RD 1487/2009)<small>«Complemento alimenticio», dosis, las tres advertencias obligatorias, %VRN, lote, consumo preferente y responsable.</small></label></li>
+    <li><input type="checkbox" id="l6"><label for="l6">Registro de Productores de Producto, sección envases, y adhesión a un SCRAP<small>RD 1055/2022: aplica a quien pone envases domésticos en el mercado.</small></label></li>
+    <li><input type="checkbox" id="l7"><label for="l7">Web: aviso legal, privacidad, cookies, condiciones de venta y desistimiento<small>LSSI-CE, RGPD/LOPDGDD, TRLGDCU. Consentimiento expreso para emails comerciales. El enlace a la plataforma ODR ya no es obligatorio (cerrada el 20/07/2025).</small></label></li>
+    <li><input type="checkbox" id="l8"><label for="l8">Seguro de responsabilidad civil de producto</label></li>
+    <li><input type="checkbox" id="l9"><label for="l9">Influencers: #publi visible en cada pieza pagada o regalada<small>Código de conducta sobre el uso de influencers en la publicidad (Autocontrol).</small></label></li>
+  </ul>
+</section>
+
+<!-- CALENDARIO -->
+<section id="calendario">
+  <p class="eyebrow">Plan de 30 días</p>
+  <h2>Validar antes de fabricar.</h2>
+  <div class="semanas">
+    <div class="caja"><span class="eyebrow">Días 1–7</span><h3>Montar</h3><ul><li>Cuenta de Instagram y 9 posts.</li><li>Dominio y landing publicada.</li><li>Herramienta de email (Shopify Email o Klaviyo) conectada al formulario.</li><li>Enviar la solicitud a 4 proveedores.</li></ul></div>
+    <div class="caja"><span class="eyebrow">Días 8–14</span><h3>Validar</h3><ul><li>Anuncios de la lista verde, 15–20 €/día.</li><li>3 Reels y stories diarias.</li><li>Contactar a 20 microinfluencers.</li></ul></div>
+    <div class="caja"><span class="eyebrow">Días 15–21</span><h3>Decidir</h3><ul><li>Comparar presupuestos y muestras.</li><li>Aplicar la regla: 300 altas a ≤ 1,50 €.</li><li>Altas fiscales y RGSEAA.</li></ul></div>
+    <div class="caja"><span class="eyebrow">Días 22–30</span><h3>Producir</h3><ul><li>Pedido del lote (plazo habitual 4–8 semanas).</li><li>Etiqueta final con el fabricante.</li><li>Notificación de puesta en el mercado.</li><li>Flujos de email listos.</li></ul></div>
+  </div>
+  <p class="suave">Lanzamiento estimado: semanas 8 a 10, según el plazo de fabricación.</p>
+</section>
+
+<!-- PENDIENTE -->
+<section id="pendiente">
+  <p class="eyebrow">Lo que falta</p>
+  <h2>Lo que solo puedes hacer tú.</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Tarea</th><th>Por qué no la he hecho</th><th class="num">Tiempo</th></tr></thead>
+    <tbody>
+      <tr><td>Crear la cuenta de Instagram</td><td>Requiere verificar un móvil y un correo tuyos, y no debía usar tus cuentas.</td><td class="num">15 min</td></tr>
+      <tr><td>Comprar el dominio</td><td>Requiere pago y titular.</td><td class="num">10 min</td></tr>
+      <tr><td>Enviar las solicitudes de presupuesto</td><td>Van con tu nombre y empresa.</td><td class="num">20 min</td></tr>
+      <tr><td>Conectar pagos (Stripe o Shopify)</td><td>Requiere alta fiscal y cuenta bancaria.</td><td class="num">1 h</td></tr>
+      <tr><td>Conectar el formulario de la lista</td><td>Pega la URL de tu herramienta de email en <code>formEndpoint</code> de la landing.</td><td class="num">10 min</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer class="pie">Fuentes clave: Reglamento (CE) 1924/2006 y (UE) 432/2012 · RD 1487/2009 · EFSA Journal 2015 sobre E141 · AESAN, procedimiento de complementos alimenticios · Reglamento (UE) 2024/3228 (cierre ODR). Archivos fuente en el repositorio, carpeta <code>clora/</code>.</footer>
+</main>
+</div>
+
+<script>
+const PIEZAS = [
+  ['09-lanzamiento','Publicación 9 · Lanzamiento','Tu ritual verde llega pronto 🌿\n\nMenta, perejil y clorofila de alfalfa. Con zinc, que contribuye al mantenimiento de la piel en condiciones normales.\n\nCuatro ingredientes. Dos cápsulas al día. Cantidades a la vista.\n\nApúntate a la lista verde (enlace en la bio) y llévate un 15 % el día del lanzamiento.\n\n#clora #ritualverde #clorofila #menta #perejil #zinc #rutinadiaria #complementosalimenticios'],
+  ['08-manifiesto','Publicación 8 · Manifiesto','No te prometemos milagros.\n\nTe contamos lo que lleva cada cápsula: 200 mg de extracto de hoja de menta, 200 mg de hoja de perejil, 150 mg de extracto de hoja de alfalfa y 10 mg de zinc por dosis diaria.\n\nSin mezclas «propietarias». Sin letra pequeña escondida.\n\n¿Qué es lo primero que miras en la etiqueta de un complemento? Te leemos 👇\n\n#clora #etiquetaclara #ritualverde'],
+  ['07-zinc','Publicación 7 · Lámina IV, zinc','Lámina IV: zinc.\n\nEl zinc contribuye al mantenimiento de la piel en condiciones normales y a la protección de las células frente al daño oxidativo.\n\nEn Clora: 10 mg de zinc (gluconato) por dosis diaria, el 100 % del valor de referencia de nutrientes.\n\n#zinc #piel #clora #ritualverde'],
+  ['06-cuatro','Publicación 6 · La fórmula','Cuatro ingredientes. Ni uno más.\n\n→ Menta piperita · 200 mg\n→ Perejil · 200 mg\n→ Clorofila de alfalfa · 150 mg\n→ Zinc · 10 mg (100 % VRN)\n\nPor dosis diaria de dos cápsulas vegetales. Guarda este post para comparar etiquetas 🔖\n\n#clora #ritualverde #clorofila #complementosalimenticios'],
+  ['05-menta','Publicación 5 · Lámina I, menta','Lámina I: menta piperita (Mentha × piperita L.).\n\nUn híbrido natural de menta acuática y hierbabuena, cultivado desde hace siglos por su aroma. En Clora: 200 mg de extracto seco de hoja por dosis diaria.\n\n¿Té de menta o chicle de menta? 🌿\n\n#menta #mentapiperita #clora #ritualverde'],
+  ['04-packs','Publicación 4 · Packs','Cuantos más días, menos pagas por bote.\n\n1 bote (30 días) · 27,90 €\n2 botes (60 días) · 47,90 € · envío gratis\n3 botes (90 días) · 62,90 € · envío gratis\n\nLa lista verde tendrá un 15 % extra el día del lanzamiento. Enlace en la bio.\n\n#clora #ritualverde'],
+  ['03-perejil','Publicación 3 · Lámina II, perejil','Lámina II: perejil (Petroselinum crispum).\n\nLa hierba de la cocina mediterránea, de la hoja a la cápsula: 200 mg de hoja en polvo por dosis diaria.\n\nDato: el perejil aporta vitamina K de forma natural. Si tomas anticoagulantes, consulta con tu médico antes de tomar Clora.\n\n#perejil #clora #ritualverde'],
+  ['02-ritual','Publicación 2 · Ritual','Diez segundos al día:\n\n1. Dos cápsulas con el desayuno y un vaso de agua.\n2. Un bote = 30 días.\n3. Déjalo a la vista, junto a la cafetera.\n\n¿Dónde lo pondrías tú? ☕\n\n#ritualverde #rutinadiaria #clora'],
+  ['01-alfalfa','Publicación 1 · Lámina III, alfalfa','Lámina III: clorofila de alfalfa (Medicago sativa L.).\n\nLa clorofila es el pigmento que hace verdes a las plantas. La obtenemos de la hoja de alfalfa, una planta trifoliada cultivada desde hace milenios. En Clora: 150 mg de extracto de hoja por dosis diaria.\n\n#clorofila #alfalfa #clora #ritualverde']
+];
+const cont = document.getElementById('piezas');
+PIEZAS.slice().reverse().forEach(([id, titulo, texto]) => {
+  const d = document.createElement('details'); d.className = 'pieza';
+  d.innerHTML = `<summary><img src="ig/${id}.jpg" alt=""><span>${titulo}<small>${id}.jpg</small></span><span class="suave">texto</span></summary><div class="cuerpo copiable"><button class="copiar" type="button" data-copiar="t-${id}">Copiar</button><pre id="t-${id}"></pre></div>`;
+  d.querySelector('pre').textContent = texto;
+  cont.appendChild(d);
+});
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-copiar]'); if (!b) return;
+  const pre = document.getElementById(b.dataset.copiar);
+  try { await navigator.clipboard.writeText(pre.textContent); b.textContent = 'Copiado'; }
+  catch { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Seleccionado'; }
+  setTimeout(() => { b.textContent = b.dataset.copiar === 'bio' ? 'Copiar bio' : 'Copiar'; }, 1600);
+});
+
+/* Calculadora de margen por pedido */
+const PACKS = [{ n: 1, precio: 27.90, envio: 3.95 }, { n: 2, precio: 47.90, envio: 0 }, { n: 3, precio: 62.90, envio: 0 }];
+const eur = v => v.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+const val = id => parseFloat(document.getElementById(id).value.replace(',', '.')) || 0;
+function calcula() {
+  const unit = val('c-unit'), env = val('c-env'), emb = val('c-emb'), pct = val('c-pct') / 100, fija = val('c-fija'), iva = val('c-iva') / 100, cpa = val('c-cpa');
+  const mezcla = [val('c-m1'), val('c-m2'), val('c-m3')];
+  const tot = mezcla.reduce((a, b) => a + b, 0) || 1;
+  let filas = '', margenMedio = 0, ticketMedio = 0;
+  PACKS.forEach((p, i) => {
+    const cobro = p.precio + p.envio;
+    const neto = cobro / (1 + iva);
+    const costes = p.n * unit + env + emb + cobro * pct + fija;
+    const margen = neto - costes;
+    margenMedio += margen * mezcla[i] / tot; ticketMedio += cobro * mezcla[i] / tot;
+    filas += `<tr><td>${p.n} bote${p.n > 1 ? 's' : ''}</td><td class="num">${eur(cobro)}</td><td class="num">${eur(neto)}</td><td class="num">${eur(costes)}</td><td class="num">${eur(margen)}</td><td class="num ${margen - cpa >= 0 ? 'pos' : 'neg'}">${eur(margen - cpa)}</td></tr>`;
+  });
+  document.getElementById('t-packs').innerHTML = filas;
+  const benef = margenMedio - cpa;
+  document.getElementById('res').innerHTML =
+    `<div><span>Ticket medio</span><b>${eur(ticketMedio)}</b></div>` +
+    `<div><span>Margen medio antes de anuncios</span><b>${eur(margenMedio)}</b></div>` +
+    `<div><span>CPA máximo sin perder dinero</span><b>${eur(margenMedio)}</b></div>` +
+    `<div><span>Beneficio por pedido con tu CPA</span><b class="${benef >= 0 ? 'pos' : 'neg'}">${eur(benef)}</b></div>`;
+}
+document.querySelectorAll('.campos input').forEach(i => i.addEventListener('input', calcula));
+calcula();
+
+/* Checklist: se recuerda solo en este navegador */
+const CL = 'clora-checklist';
+let marcados = {};
+try { marcados = JSON.parse(localStorage.getItem(CL) || '{}'); } catch {}
+document.querySelectorAll('#checklist input').forEach(c => {
+  c.checked = !!marcados[c.id];
+  c.addEventListener('change', () => { marcados[c.id] = c.checked; try { localStorage.setItem(CL, JSON.stringify(marcados)); } catch {} });
+});
+</script>

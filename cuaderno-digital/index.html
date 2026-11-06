@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Cuaderno Digital</title>
+<style>
+:root{
+  --desk:#d9d2c5; --paper:#fffdf6; --rule:#b9d3ea; --margin:#e8a0a0; --ink:#1b2a4a;
+  --text:#1a1a1a; --ui:#2f3b52; --ui-bg:#ffffffee; --accent:#2b6cb0; --chip:#eef3fb;
+  --lh:52px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--desk);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ui);-webkit-user-select:none;user-select:none}
+#bar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--ui-bg);box-shadow:0 1px 4px #0002;z-index:20}
+#bar button,#bar select{height:38px;min-width:38px;border:1px solid #c9d2e0;background:#fff;border-radius:8px;font-size:15px;color:var(--ui);padding:0 10px;cursor:pointer}
+#bar button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+#bar .sp{flex:1}
+#status{font-size:12px;padding:3px 8px;border-radius:10px;background:#eee;white-space:nowrap}
+#status.ok{background:#d8f3dc;color:#1b5e20}#status.busy{background:#fff3cd;color:#7a5b00}#status.err{background:#fde2e1;color:#9b1c1c}
+#cands{position:fixed;top:56px;left:50%;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:94vw;z-index:19}
+#cands button{border:1px solid #bcd0ec;background:var(--chip);border-radius:16px;padding:6px 12px;font-size:16px;cursor:pointer}
+#cands button:first-child{font-weight:600}
+#stage{position:fixed;top:52px;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;perspective:1800px;padding:14px}
+#page{position:relative;width:100%;height:100%;max-width:900px;background:var(--paper);border-radius:4px 10px 10px 4px;box-shadow:0 6px 24px #0003, inset 10px 0 18px -12px #0004;overflow:hidden;transform-origin:left center;will-change:transform}
+#page.anim{transition:transform .35s ease, opacity .35s ease}
+#rules{position:absolute;inset:0}
+#lines{position:absolute;inset:0;pointer-events:none}
+.ln{position:absolute;left:0;right:0;height:var(--lh);display:flex;align-items:flex-end;padding-bottom:4px;font-family:var(--font, Georgia, "Times New Roman", serif);font-size:calc(var(--lh) * .46);color:var(--text);white-space:nowrap;overflow:hidden;outline:none}
+body.edit .ln{pointer-events:auto;-webkit-user-select:text;user-select:text;cursor:text}
+body.edit .ln:focus{background:#fff8c4aa}
+#ink{position:absolute;inset:0;touch-action:none}
+body.edit #ink{pointer-events:none}
+#hdr{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;font-size:13px;color:#8a8f99;pointer-events:none}
+#pno{position:absolute;bottom:10px;right:20px;font-size:13px;color:#8a8f99;pointer-events:none}
+#panel{position:fixed;top:60px;right:10px;width:min(360px,94vw);max-height:80vh;overflow:auto;background:#fff;border-radius:12px;box-shadow:0 8px 30px #0004;padding:14px;z-index:30;display:none;font-size:14px}
+#panel.show{display:block}
+#panel h3{margin:4px 0 10px;font-size:16px}
+#panel label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
+#panel select,#panel input[type=text]{padding:6px;border:1px solid #ccd;border-radius:6px;font-size:14px}
+#panel button{padding:7px 10px;border:1px solid #ccd;border-radius:6px;background:#f6f8fb;cursor:pointer;font-size:14px}
+#dict{width:100%;border-collapse:collapse;margin-top:6px}
+#dict td{border-bottom:1px solid #eee;padding:4px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#2f3b52;color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .3s;z-index:40;pointer-events:none}
+#toast.show{opacity:1}
+@media (max-width:600px){#bar .lbl{display:none}}
+@media print{
+  #bar,#cands,#panel,#toast,#stage{display:none!important}
+  html,body{overflow:visible;height:auto;background:#fff}
+  #printout{display:block!important;font-family:Georgia,serif;font-size:12pt;line-height:1.6;white-space:pre-wrap}
+  .pp{page-break-after:always}
+}
+#printout{display:none}
+</style>
+</head>
+<body>
+<div id="bar">
+  <button id="bPrev" title="Página anterior">◀</button>
+  <button id="bNext" title="Página siguiente">▶</button>
+  <button id="bUndo" title="Deshacer última conversión">↶<span class="lbl"> Deshacer</span></button>
+  <button id="bEdit" title="Modo edición con teclado">⌨<span class="lbl"> Editar</span></button>
+  <button id="bConvert" title="Convertir ahora">Aa<span class="lbl"> Convertir</span></button>
+  <span class="sp"></span>
+  <span id="status">Iniciando…</span>
+  <button id="bMenu" title="Ajustes y exportar">☰</button>
+</div>
+<div id="cands"></div>
+<div id="stage">
+  <div id="page">
+    <svg id="rules"></svg>
+    <div id="hdr"><span id="pdate" style="margin-left:90px"></span><span style="margin-right:20px">Cuaderno Digital</span></div>
+    <div id="lines"></div>
+    <canvas id="ink"></canvas>
+    <div id="pno"></div>
+  </div>
+</div>
+<div id="panel">
+  <h3>Ajustes</h3>
+  <label>Idioma de escritura
+    <select id="sLang"><option value="es">Español</option><option value="en">Inglés</option><option value="ca">Catalán</option><option value="pt">Portugués</option><option value="fr">Francés</option></select></label>
+  <label>Motor de reconocimiento
+    <select id="sEngine"><option value="auto">Automático</option><option value="native">Nativo del navegador</option><option value="google">Google (online)</option></select></label>
+  <label>Espera antes de convertir <span><input id="sDelay" type="range" min="400" max="3000" step="100"> <b id="vDelay"></b></span></label>
+  <label>Conversión automática <input id="sAuto" type="checkbox"></label>
+  <label>Escribir también con el dedo <input id="sFinger" type="checkbox"></label>
+  <label>Separación de líneas
+    <select id="sLh"><option value="44">Estrecha</option><option value="52">Normal</option><option value="64">Ancha</option><option value="76">Muy ancha</option></select></label>
+  <label>Letra del texto
+    <select id="sFont"><option value='Georgia,"Times New Roman",serif'>Georgia (serif)</option><option value='"Segoe UI",Roboto,Arial,sans-serif'>Sans</option><option value='"Courier New",monospace'>Máquina de escribir</option><option value='"Comic Sans MS","Bradley Hand",cursive'>Manuscrita</option></select></label>
+  <h3 style="margin-top:16px">Mi caligrafía (correcciones aprendidas)</h3>
+  <div style="font-size:12px;color:#667">Cuando eliges otra sugerencia o corriges una palabra en modo Editar, se guarda aquí y se aplica automáticamente la próxima vez.</div>
+  <div style="display:flex;gap:6px;margin-top:8px"><input id="dFrom" type="text" placeholder="Lee" style="width:40%"><input id="dTo" type="text" placeholder="Debe ser" style="width:40%"><button id="dAdd">+</button></div>
+  <table id="dict"></table>
+  <h3 style="margin-top:16px">Exportar</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:6px">
+    <button id="eCopy">Copiar todo</button><button id="eTxt">Descargar .txt</button><button id="eDoc">Descargar Word</button><button id="ePrint">Imprimir / PDF</button>
+  </div>
+  <h3 style="margin-top:16px">Página</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:6px"><button id="pClear">Vaciar esta página</button><button id="pDel">Eliminar esta página</button></div>
+</div>
+<div id="printout"></div>
+<div id="toast"></div>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const KEY = 'cuadernoDigital.v1';
+const TOP = 70, LEFT = 80, BOTTOM = 40;
+
+// ---------- Estado persistente ----------
+const def = { pages: [{ lines: [], date: new Date().toISOString() }], cur: 0,
+  set: { lang: 'es', engine: 'auto', delay: 1100, auto: true, finger: false, lh: 52, font: 'Georgia,"Times New Roman",serif' },
+  dict: {} };
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)) || def; } catch { S = def; }
+S.set = Object.assign({}, def.set, S.set); S.dict = S.dict || {};
+if (!S.pages || !S.pages.length) S.pages = def.pages;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+
+// ---------- Utilidades UI ----------
+const toast = (m) => { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800); };
+const status = (m, c) => { const s = $('status'); s.textContent = m; s.className = c || ''; };
+
+// ---------- Maquetación de la página ----------
+const page = $('page'), canvas = $('ink'), ctx = canvas.getContext('2d'), linesEl = $('lines');
+let W = 0, H = 0, nLines = 0, LH = S.set.lh;
+
+function layout() {
+  LH = +S.set.lh;
+  document.documentElement.style.setProperty('--lh', LH + 'px');
+  document.documentElement.style.setProperty('--font', S.set.font);
+  const r = page.getBoundingClientRect(); W = r.width; H = r.height;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  nLines = Math.max(1, Math.floor((H - TOP - BOTTOM) / LH));
+  let svg = `<line x1="${LEFT - 10}" y1="0" x2="${LEFT - 10}" y2="${H}" stroke="var(--margin)" stroke-width="1.5"/>`;
+  for (let i = 1; i <= nLines; i++) { const y = TOP + i * LH; svg += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--rule)" stroke-width="1"/>`; }
+  $('rules').setAttribute('viewBox', `0 0 ${W} ${H}`); $('rules').innerHTML = svg;
+  renderLines(); redraw();
+}
+
+function curPage() { return S.pages[S.cur]; }
+
+function renderLines() {
+  const p = curPage();
+  linesEl.innerHTML = '';
+  for (let i = 0; i < nLines; i++) {
+    const d = document.createElement('div');
+    d.className = 'ln'; d.dataset.i = i;
+    d.style.top = (TOP + i * LH) + 'px'; d.style.paddingLeft = LEFT + 'px'; d.style.paddingRight = '20px';
+    d.textContent = p.lines[i] || '';
+    d.contentEditable = document.body.classList.contains('edit') ? 'true' : 'false';
+    d.addEventListener('focus', () => d.dataset.old = d.textContent);
+    d.addEventListener('blur', () => onLineEdited(i, d.dataset.old || '', d.textContent));
+    d.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const n = linesEl.children[i + 1]; n ? n.focus() : d.blur(); } });
+    linesEl.appendChild(d);
+  }
+  // Si hay texto en líneas que ya no caben (cambio de tamaño), se conserva en datos.
+  $('pno').textContent = `Página ${S.cur + 1} / ${S.pages.length}`;
+  $('pdate').textContent = new Date(p.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ---------- Aprendizaje de la caligrafía ----------
+const norm = w => w.toLowerCase().replace(/[.,;:!?¡¿"()]/g, '');
+function applyDict(text) {
+  return text.split(/(\s+)/).map(tok => {
+    const k = norm(tok); if (!k || !S.dict[k]) return tok;
+    let rep = S.dict[k];
+    if (tok[0] && tok[0] !== tok[0].toLowerCase()) rep = rep[0].toUpperCase() + rep.slice(1);
+    const tail = tok.match(/[.,;:!?"]+$/); return rep + (tail && !/[.,;:!?"]$/.test(rep) ? tail[0] : '');
+  }).join('');
+}
+function learn(from, to) {
+  const a = from.trim().split(/\s+/), b = to.trim().split(/\s+/);
+  if (a.length !== b.length) { if (a.length === 1 || b.length === 1) { if (norm(from) && norm(from) !== norm(to)) S.dict[norm(from)] = to.trim(); } }
+  else a.forEach((w, i) => { const k = norm(w), v = b[i].replace(/[.,;:!?"]+$/, ''); if (k && norm(v) !== k) S.dict[k] = v; });
+  save(); renderDict();
+}
+function onLineEdited(i, oldT, newT) {
+  if (oldT === newT) return;
+  const p = curPage(); p.lines[i] = newT; save();
+  const a = oldT.trim().split(/\s+/), b = newT.trim().split(/\s+/);
+  if (oldT.trim() && a.length === b.length) { learn(oldT, newT); toast('Corrección aprendida'); }
+}
+function renderDict() {
+  const t = $('dict'); t.innerHTML = '';
+  const ks = Object.keys(S.dict).sort();
+  if (!ks.length) { t.innerHTML = '<tr><td style="color:#999">Sin correcciones todavía</td></tr>'; return; }
+  ks.forEach(k => { const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${esc(k)}</td><td>→</td><td><b>${esc(S.dict[k])}</b></td><td><button data-k="${esc(k)}">✕</button></td>`;
+    t.appendChild(tr); });
+  t.querySelectorAll('button').forEach(b => b.onclick = () => { delete S.dict[b.dataset.k]; save(); renderDict(); });
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------- Tinta ----------
+let strokes = [];      // trazos pendientes {pts:[{x,y,t,p}], line}
+let current = null, idleTimer = null, lastPen = 0;
+function drawStroke(s) {
+  const pts = s.pts; if (!pts.length) return;
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--ink'); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (pts.length === 1) { ctx.beginPath(); ctx.arc(pts[0].x, pts[0].y, 1.6, 0, 7); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); return; }
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    ctx.lineWidth = 1.2 + 2.4 * (b.p || .5);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+}
+function redraw() { ctx.clearRect(0, 0, W, H); strokes.forEach(drawStroke); if (current) drawStroke(current); }
+const lineOf = y => Math.min(nLines - 1, Math.max(0, Math.floor((y - TOP) / LH)));
+
+// ---------- Gestos: escribir (lápiz) / pasar página (dedo) ----------
+let swipe = null;
+const isDrawPointer = e => e.pointerType === 'pen' || e.pointerType === 'mouse' || (e.pointerType === 'touch' && S.set.finger);
+canvas.addEventListener('pointerdown', e => {
+  hideCands();
+  if (e.pointerType === 'touch' && (Date.now() - lastPen < 600 || current)) return; // rechazo de palma
+  if (isDrawPointer(e) && !(e.pointerType === 'touch' && swipe)) {
+    if (e.pointerType === 'touch' && S.set.finger && e.isPrimary === false) return;
+    canvas.setPointerCapture(e.pointerId);
+    clearTimeout(idleTimer);
+    current = { id: e.pointerId, pts: [pt(e)] }; redraw();
+  } else if (e.pointerType === 'touch') {
+    swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0 };
+  }
+});
+canvas.addEventListener('pointermove', e => {
+  if (current && e.pointerId === current.id) {
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    evs.forEach(ev => current.pts.push(pt(ev)));
+    if (e.pointerType === 'pen') lastPen = Date.now();
+    redraw();
+  } else if (swipe && e.pointerId === swipe.id) {
+    swipe.dx = e.clientX - swipe.x;
+    dragTurn(swipe.dx);
+  }
+});
+const endPointer = e => {
+  if (current && e.pointerId === current.id) {
+    if (e.pointerType === 'pen') lastPen = Date.now();
+    const ys = current.pts.map(p => p.y).sort((a, b) => a - b);
+    current.line = lineOf(ys[ys.length >> 1]);
+    strokes.push(current); current = null; redraw();
+    if (S.set.auto) idleTimer = setTimeout(convert, +S.set.delay);
+  } else if (swipe && e.pointerId === swipe.id) {
+    const dx = swipe.dx; swipe = null;
+    if (dx < -70) turn(1); else if (dx > 70) turn(-1); else resetTurn();
+  }
+};
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+function pt(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: Date.now(), p: e.pressure || .5 }; }
+// En modo edición se puede pasar página deslizando sobre la página igualmente
+page.addEventListener('touchstart', () => {}, { passive: true });
+
+// ---------- Reconocimiento ----------
+let nativeRec = null, nativeChecked = false;
+async function getNative() {
+  if (nativeChecked) return nativeRec; nativeChecked = true;
+  try {
+    if ('createHandwritingRecognizer' in navigator) {
+      const q = await navigator.queryHandwritingRecognizer?.({ languages: [S.set.lang] });
+      if (q === null) return null;
+      nativeRec = await navigator.createHandwritingRecognizer({ languages: [S.set.lang] });
+    }
+  } catch { nativeRec = null; }
+  return nativeRec;
+}
+async function recNative(group) {
+  const rec = await getNative(); if (!rec) throw new Error('sin motor nativo');
+  const d = rec.startDrawing({ recognitionType: 'text', inputType: 'stylus', alternatives: 4 });
+  group.forEach(s => { const st = new HandwritingStroke(); const t0 = s.pts[0].t; s.pts.forEach(p => st.addPoint({ x: p.x, y: p.y, t: p.t - t0 })); d.addStroke(st); });
+  const pr = await d.getPrediction(); d.clear?.();
+  return pr.map(p => p.text).filter(Boolean);
+}
+async function recGoogle(group, lineIdx) {
+  const y0 = TOP + lineIdx * LH - LH; // margen por encima para trazos altos
+  const t0 = group[0].pts[0].t;
+  const ink = group.map(s => [s.pts.map(p => Math.round(p.x)), s.pts.map(p => Math.round(p.y - y0)), s.pts.map(p => p.t - t0)]);
+  const body = { options: 'enable_pre_space', requests: [{ writing_guide: { writing_area_width: Math.round(W), writing_area_height: Math.round(LH * 3) }, ink, language: S.set.lang }] };
+  const r = await fetch('https://inputtools.google.com/request?ime=handwriting&app=mobilesearch&cs=1&oe=UTF-8', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (j[0] !== 'SUCCESS') throw new Error('respuesta no válida');
+  return j[1][0][1] || [];
+}
+async function recognize(group, lineIdx) {
+  const eng = S.set.engine;
+  if (eng === 'native') return recNative(group);
+  if (eng === 'google') return recGoogle(group, lineIdx);
+  try { const n = await getNative(); if (n) return await recNative(group); } catch {}
+  return recGoogle(group, lineIdx);
+}
+
+let history = []; // [{page, line, before, after, cands}]
+let busy = false;
+async function convert() {
+  clearTimeout(idleTimer);
+  if (busy || !strokes.length || current) return;
+  busy = true; status('Convirtiendo…', 'busy');
+  const batch = strokes.slice();
+  const byLine = {}; batch.forEach(s => (byLine[s.line] = byLine[s.line] || []).push(s));
+  const pIdx = S.cur, p = curPage();
+  let lastEntry = null, failed = false;
+  for (const li of Object.keys(byLine).map(Number).sort((a, b) => a - b)) {
+    const group = byLine[li].sort((a, b) => Math.min(...a.pts.map(q => q.x)) - Math.min(...b.pts.map(q => q.x)));
+    try {
+      const cands = (await recognize(group, li)).map(c => c.trim()).filter(Boolean);
+      if (!cands.length) continue;
+      const before = p.lines[li] || '';
+      const chosen = applyDict(cands[0]);
+      p.lines[li] = before ? before.replace(/\s+$/, '') + (/^[.,;:!?)]/.test(chosen) ? '' : ' ') + chosen : chosen.charAt(0).toUpperCase() + chosen.slice(1);
+      lastEntry = { page: pIdx, line: li, before, inserted: chosen, cands: [...new Set([chosen, ...cands.map(applyDict), ...cands])].slice(0, 6) };
+      history.push(lastEntry);
+      strokes = strokes.filter(s => !group.includes(s));
+    } catch (err) { failed = true; console.warn(err); }
+  }
+  save(); renderLines(); redraw(); busy = false;
+  if (failed) status('Sin reconocimiento: revisa conexión/motor', 'err'); else status('Listo ✓', 'ok');
+  if (lastEntry) showCands(lastEntry);
+  if (strokes.length && !current && !failed) idleTimer = setTimeout(convert, 200);
+}
+
+function showCands(entry) {
+  const c = $('cands'); c.innerHTML = '';
+  entry.cands.forEach((t, k) => { const b = document.createElement('button'); b.textContent = t;
+    b.onclick = () => { if (k) replaceLast(entry, t); hideCands(); }; c.appendChild(b); });
+  clearTimeout(showCands.h); showCands.h = setTimeout(hideCands, 6000);
+}
+function hideCands() { $('cands').innerHTML = ''; }
+function replaceLast(entry, t) {
+  const p = S.pages[entry.page];
+  const b = entry.before;
+  const nt = b ? b.replace(/\s+$/, '') + ' ' + t : t.charAt(0).toUpperCase() + t.slice(1);
+  p.lines[entry.line] = nt;
+  learn(entry.inserted, t); entry.inserted = t;
+  save(); if (entry.page === S.cur) renderLines(); toast('Aprendido: «' + t + '»');
+}
+
+// ---------- Pasar página ----------
+function dragTurn(dx) {
+  page.classList.remove('anim');
+  const a = Math.max(-80, Math.min(0, dx / W * 120));
+  if (dx < 0) page.style.transform = `rotateY(${a}deg)`;
+  else page.style.transform = `translateX(${Math.min(dx, 120) * .4}px)`;
+}
+function resetTurn() { page.classList.add('anim'); page.style.transform = ''; page.style.opacity = ''; }
+let turning = false;
+function turn(dir) {
+  if (turning) return;
+  if (dir < 0 && S.cur === 0) { resetTurn(); toast('Primera página'); return; }
+  if (strokes.length) convert();
+  turning = true; hideCands();
+  page.classList.add('anim');
+  page.style.transform = dir > 0 ? 'rotateY(-95deg)' : 'translateX(60%)';
+  page.style.opacity = '0';
+  setTimeout(() => {
+    strokes = []; current = null;
+    S.cur += dir;
+    if (S.cur >= S.pages.length) S.pages.push({ lines: [], date: new Date().toISOString() });
+    save();
+    page.classList.remove('anim');
+    page.style.transform = dir > 0 ? 'translateX(40%)' : 'rotateY(-95deg)';
+    renderLines(); redraw();
+    requestAnimationFrame(() => requestAnimationFrame(() => { page.classList.add('anim'); page.style.transform = ''; page.style.opacity = ''; turning = false; }));
+  }, 350);
+}
+
+// Deslizar en modo edición (sobre las líneas)
+let es = null;
+linesEl.addEventListener('touchstart', e => { if (document.body.classList.contains('edit')) es = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+linesEl.addEventListener('touchend', e => { if (!es) return; const t = e.changedTouches[0], dx = t.clientX - es.x, dy = t.clientY - es.y; es = null;
+  if (Math.abs(dx) > 90 && Math.abs(dy) < 60) turn(dx < 0 ? 1 : -1); });
+
+// ---------- Botones ----------
+$('bPrev').onclick = () => turn(-1);
+$('bNext').onclick = () => turn(1);
+$('bConvert').onclick = () => convert();
+$('bUndo').onclick = () => {
+  if (strokes.length) { strokes.pop(); redraw(); return; }
+  const h = history.pop(); if (!h) { toast('Nada que deshacer'); return; }
+  S.pages[h.page].lines[h.line] = h.before; save(); if (h.page === S.cur) renderLines(); hideCands();
+};
+$('bEdit').onclick = () => {
+  const on = document.body.classList.toggle('edit'); $('bEdit').classList.toggle('on', on);
+  if (on && strokes.length) convert();
+  renderLines(); toast(on ? 'Modo edición: toca una línea para corregir' : 'Modo escritura');
+};
+$('bMenu').onclick = () => $('panel').classList.toggle('show');
+document.addEventListener('keydown', e => {
+  if (document.body.classList.contains('edit') && document.activeElement?.classList.contains('ln')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') turn(1);
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') turn(-1);
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); $('bUndo').click(); }
+});
+
+// Ajustes
+const bind = (id, k, cb, prop = 'value') => { const el = $(id); el[prop] = S.set[k]; el.onchange = el.oninput = () => { S.set[k] = prop === 'checked' ? el.checked : el.value; save(); cb && cb(); }; };
+bind('sLang', 'lang', () => { nativeChecked = false; nativeRec = null; checkEngine(); });
+bind('sEngine', 'engine', () => checkEngine());
+bind('sDelay', 'delay', () => $('vDelay').textContent = (S.set.delay / 1000).toFixed(1) + ' s'); $('vDelay').textContent = (S.set.delay / 1000).toFixed(1) + ' s';
+bind('sAuto', 'auto', null, 'checked');
+bind('sFinger', 'finger', () => toast(S.set.finger ? 'Dedo: escribe (usa ◀ ▶ o desliza en modo Editar)' : 'Dedo: pasa páginas'), 'checked');
+bind('sLh', 'lh', layout);
+bind('sFont', 'font', layout);
+$('dAdd').onclick = () => { const a = norm($('dFrom').value.trim()), b = $('dTo').value.trim(); if (a && b) { S.dict[a] = b; save(); renderDict(); $('dFrom').value = $('dTo').value = ''; } };
+
+// Exportar
+const allText = () => S.pages.map((p, i) => `--- Página ${i + 1} (${new Date(p.date).toLocaleDateString('es-ES')}) ---\n` + (p.lines || []).map(l => l || '').join('\n').replace(/\n+$/, '')).join('\n\n');
+const download = (name, data, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+const stamp = () => new Date().toISOString().slice(0, 10);
+$('eCopy').onclick = async () => { try { await navigator.clipboard.writeText(allText()); toast('Texto copiado'); } catch { toast('No se pudo copiar'); } };
+$('eTxt').onclick = () => download(`cuaderno-${stamp()}.txt`, allText(), 'text/plain;charset=utf-8');
+$('eDoc').onclick = () => {
+  const html = S.pages.map((p, i) => `<h3>Página ${i + 1} — ${new Date(p.date).toLocaleDateString('es-ES')}</h3>` + (p.lines || []).map(l => `<p>${esc(l || '')}&nbsp;</p>`).join('')).join('<br style="page-break-before:always">');
+  download(`cuaderno-${stamp()}.doc`, `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body style="font-family:Georgia">${html}</body></html>`, 'application/msword');
+};
+$('ePrint').onclick = () => { $('printout').innerHTML = S.pages.map((p, i) => `<div class="pp"><b>Página ${i + 1}</b>\n${esc((p.lines || []).join('\n'))}</div>`).join(''); $('panel').classList.remove('show'); window.print(); };
+$('pClear').onclick = () => { if (confirm('¿Vaciar el texto de esta página?')) { curPage().lines = []; strokes = []; save(); renderLines(); redraw(); } };
+$('pDel').onclick = () => { if (!confirm('¿Eliminar esta página?')) return; S.pages.splice(S.cur, 1); if (!S.pages.length) S.pages.push({ lines: [], date: new Date().toISOString() }); S.cur = Math.min(S.cur, S.pages.length - 1); strokes = []; save(); renderLines(); redraw(); };
+
+async function checkEngine() {
+  if (S.set.engine === 'google') { status(navigator.onLine ? 'Motor: Google' : 'Sin conexión', navigator.onLine ? 'ok' : 'err'); return; }
+  const n = await getNative();
+  if (n) status('Motor: nativo', 'ok');
+  else if (S.set.engine === 'native') status('Motor nativo no disponible', 'err');
+  else status(navigator.onLine ? 'Motor: Google' : 'Sin conexión', navigator.onLine ? 'ok' : 'err');
+}
+
+window.addEventListener('resize', () => { clearTimeout(layout.h); layout.h = setTimeout(layout, 150); });
+window.addEventListener('online', checkEngine); window.addEventListener('offline', checkEngine);
+renderDict(); layout(); checkEngine();
+})();
+</script>
+</body>
+</html>

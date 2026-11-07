@@ -34,7 +34,8 @@ body.edit .ln:focus{background:#fff8c4aa}
 #ink{position:absolute;inset:0;touch-action:none}
 body.edit #ink{pointer-events:none}
 #hdr{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;font-size:13px;color:#8a8f99;pointer-events:none}
-#pno{position:absolute;bottom:10px;right:20px;font-size:13px;color:#8a8f99;pointer-events:none}
+#edge{position:absolute;top:0;right:0;bottom:0;width:56px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#c4b9a3;background:linear-gradient(to left,#0000000d,#0000);pointer-events:none}
+#pno{position:absolute;bottom:10px;right:66px;font-size:13px;color:#8a8f99;pointer-events:none}
 #panel{position:fixed;top:60px;right:10px;width:min(360px,94vw);max-height:80vh;overflow:auto;background:#fff;border-radius:12px;box-shadow:0 8px 30px #0004;padding:14px;z-index:30;display:none;font-size:14px}
 #panel.show{display:block}
 #panel h3{margin:4px 0 10px;font-size:16px}
@@ -74,6 +75,7 @@ body.edit #ink{pointer-events:none}
     <div id="lines"></div>
     <canvas id="ink"></canvas>
     <div id="pno"></div>
+    <div id="edge" title="Arrastra hacia la izquierda para pasar página">‹</div>
   </div>
 </div>
 <div id="panel">
@@ -84,7 +86,7 @@ body.edit #ink{pointer-events:none}
     <select id="sEngine"><option value="auto">Automático</option><option value="native">Nativo del navegador</option><option value="google">Google (online)</option></select></label>
   <label>Espera antes de convertir <span><input id="sDelay" type="range" min="400" max="3000" step="100"> <b id="vDelay"></b></span></label>
   <label>Conversión automática <input id="sAuto" type="checkbox"></label>
-  <label>Escribir también con el dedo <input id="sFinger" type="checkbox"></label>
+  <label>Tengo lápiz activo (S Pen): el dedo solo pasa páginas <input id="sFinger" type="checkbox"></label>
   <label>Separación de líneas
     <select id="sLh"><option value="44">Estrecha</option><option value="52">Normal</option><option value="64">Ancha</option><option value="76">Muy ancha</option></select></label>
   <label>Letra del texto
@@ -111,7 +113,7 @@ const TOP = 70, LEFT = 80, BOTTOM = 40;
 
 // ---------- Estado persistente ----------
 const def = { pages: [{ lines: [], date: new Date().toISOString() }], cur: 0,
-  set: { lang: 'es', engine: 'auto', delay: 1100, auto: true, finger: false, lh: 52, font: 'Georgia,"Times New Roman",serif' },
+  set: { lang: 'es', engine: 'auto', delay: 1100, auto: true, penOnly: false, lh: 52, font: 'Georgia,"Times New Roman",serif' },
   dict: {} };
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)) || def; } catch { S = def; }
@@ -150,7 +152,7 @@ function renderLines() {
   for (let i = 0; i < nLines; i++) {
     const d = document.createElement('div');
     d.className = 'ln'; d.dataset.i = i;
-    d.style.top = (TOP + i * LH) + 'px'; d.style.paddingLeft = LEFT + 'px'; d.style.paddingRight = '20px';
+    d.style.top = (TOP + i * LH) + 'px'; d.style.paddingLeft = LEFT + 'px'; d.style.paddingRight = '66px';
     d.textContent = p.lines[i] || '';
     d.contentEditable = document.body.classList.contains('edit') ? 'true' : 'false';
     d.addEventListener('focus', () => d.dataset.old = d.textContent);
@@ -214,23 +216,30 @@ const lineOf = y => Math.min(nLines - 1, Math.max(0, Math.floor((y - TOP) / LH))
 
 // ---------- Gestos: escribir (lápiz) / pasar página (dedo) ----------
 let swipe = null;
-const isDrawPointer = e => e.pointerType === 'pen' || e.pointerType === 'mouse' || (e.pointerType === 'touch' && S.set.finger);
+const touches = new Map();
+// Zonas para pasar página: borde derecho (siguiente) y margen izquierdo (anterior). Dos dedos: en cualquier sitio.
+const inEdge = e => { const r = canvas.getBoundingClientRect(), x = e.clientX - r.left; return x > W - 56 || x < LEFT - 14; };
 canvas.addEventListener('pointerdown', e => {
   hideCands();
-  if (e.pointerType === 'touch' && (Date.now() - lastPen < 600 || current)) return; // rechazo de palma
-  if (isDrawPointer(e) && !(e.pointerType === 'touch' && swipe)) {
-    if (e.pointerType === 'touch' && S.set.finger && e.isPrimary === false) return;
-    canvas.setPointerCapture(e.pointerId);
-    clearTimeout(idleTimer);
-    current = { id: e.pointerId, pts: [pt(e)] }; redraw();
-  } else if (e.pointerType === 'touch') {
-    swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0 };
+  if (e.pointerType === 'touch') {
+    touches.set(e.pointerId, e.clientX);
+    if (Date.now() - lastPen < 600) return;                       // palma mientras se usa lápiz activo
+    if (S.set.penOnly && lastPen) { swipe = { id: e.pointerId, x: e.clientX, dx: 0 }; return; }
+    if (touches.size >= 2) {                                      // dos dedos = pasar página
+      if (current && current.pts.length < 40) current = null;
+      redraw(); swipe = { id: e.pointerId, x: e.clientX, dx: 0 }; return;
+    }
+    if (current) return;
   }
+  if (inEdge(e)) { canvas.setPointerCapture(e.pointerId); swipe = { id: e.pointerId, x: e.clientX, dx: 0 }; return; }
+  canvas.setPointerCapture(e.pointerId);
+  clearTimeout(idleTimer);
+  current = { id: e.pointerId, pts: [pt(e)] }; redraw();
 });
 canvas.addEventListener('pointermove', e => {
   if (current && e.pointerId === current.id) {
     const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-    evs.forEach(ev => current.pts.push(pt(ev)));
+    (evs.length ? evs : [e]).forEach(ev => current.pts.push(pt(ev)));
     if (e.pointerType === 'pen') lastPen = Date.now();
     redraw();
   } else if (swipe && e.pointerId === swipe.id) {
@@ -239,6 +248,7 @@ canvas.addEventListener('pointermove', e => {
   }
 });
 const endPointer = e => {
+  touches.delete(e.pointerId);
   if (current && e.pointerId === current.id) {
     if (e.pointerType === 'pen') lastPen = Date.now();
     const ys = current.pts.map(p => p.y).sort((a, b) => a - b);
@@ -247,7 +257,8 @@ const endPointer = e => {
     if (S.set.auto) idleTimer = setTimeout(convert, +S.set.delay);
   } else if (swipe && e.pointerId === swipe.id) {
     const dx = swipe.dx; swipe = null;
-    if (dx < -70) turn(1); else if (dx > 70) turn(-1); else resetTurn();
+    if (dx < -60) turn(1); else if (dx > 60) turn(-1); else resetTurn();
+    if (S.set.auto && strokes.length) idleTimer = setTimeout(convert, +S.set.delay);
   }
 };
 canvas.addEventListener('pointerup', endPointer);
@@ -402,7 +413,7 @@ bind('sLang', 'lang', () => { nativeChecked = false; nativeRec = null; checkEngi
 bind('sEngine', 'engine', () => checkEngine());
 bind('sDelay', 'delay', () => $('vDelay').textContent = (S.set.delay / 1000).toFixed(1) + ' s'); $('vDelay').textContent = (S.set.delay / 1000).toFixed(1) + ' s';
 bind('sAuto', 'auto', null, 'checked');
-bind('sFinger', 'finger', () => toast(S.set.finger ? 'Dedo: escribe (usa ◀ ▶ o desliza en modo Editar)' : 'Dedo: pasa páginas'), 'checked');
+bind('sFinger', 'penOnly', () => toast(S.set.penOnly ? 'Con lápiz activo el dedo solo pasa páginas' : 'Dedo y lápiz escriben'), 'checked');
 bind('sLh', 'lh', layout);
 bind('sFont', 'font', layout);
 $('dAdd').onclick = () => { const a = norm($('dFrom').value.trim()), b = $('dTo').value.trim(); if (a && b) { S.dict[a] = b; save(); renderDict(); $('dFrom').value = $('dTo').value = ''; } };
